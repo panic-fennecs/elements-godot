@@ -1,6 +1,6 @@
 extends Node2D
 
-const REPEL_DISTANCE = 200
+const REPEL_DISTANCE = 10
 
 var p = preload("res://src/level/Element.tscn")
 
@@ -16,7 +16,7 @@ func _add_elem(pos):
 func _ready():
 	for x in range(10):
 		for y in range(10):
-			_add_elem(Vector2(x*10, y*10))
+			_add_elem(Vector2(x+200, y+200))
 
 func _physics_process(delta):
 	for e1 in elements:
