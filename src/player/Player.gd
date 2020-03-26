@@ -9,7 +9,7 @@ const JUMP_FORCE: float = 80.0
 const DRAG: float = 3.0
 const MAX_SPEED: float = 50.0
 const AIM_DISTANCE: float = 100.0
-const IDLE_SPEED = 0.1
+const IDLE_SPEED = 20
 
 var _velocity: Vector2 = Vector2.ZERO
 
