@@ -25,7 +25,7 @@ func sub_physics_process(delta):
 	stay_in_view()
 
 func stay_in_view():
-	var level_size = get_node("/root/Main/Level").WORLD_SIZE
+	var level_size = $"/root/Main/Level".WORLD_SIZE
 	if position.x < 0:
 		position.x = 0
 		if velocity.x < 0:
