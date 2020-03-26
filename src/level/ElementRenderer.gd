@@ -1,17 +1,14 @@
 extends Node2D
 
+onready var start_time = OS.get_ticks_msec();
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
+	var elapsed_time = (OS.get_ticks_msec() - start_time) / 1000.0; # seconds
+	$Canvas.material.set_shader_param("elapsed_time", elapsed_time)
+
 	var canvas_size = get_viewport().size
 	var aspect_ratio = canvas_size.x / canvas_size.y
 	
