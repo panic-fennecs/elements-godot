@@ -7,6 +7,7 @@ code = "shader_type canvas_item;
 render_mode unshaded;
 
 uniform vec2 canvas_size;
+uniform sampler2D elements;
 
 float circle(vec2 p) {
 	return length(p);
@@ -22,9 +23,13 @@ void fragment() {
 	d = smoothstep(.3 + SCREEN_PIXEL_SIZE.y, .3, d);
 	COLOR = vec4(0, 0, 0, 1);
 	//COLOR += d * vec4(.2, .4, .8, 1);
-	COLOR.r += smoothstep(.5, .51, uv.x);
-	COLOR.b += smoothstep(.5, .51, uv.y);
-	COLOR.a *= .1;
+	//COLOR.r += smoothstep(.5, .51, uv.x);
+	//COLOR.b += smoothstep(.5, .51, uv.y);
+	//COLOR.g += max(0., dot(texture(elements, uv).rgb, vec3(1)));
+	//COLOR.g += max(0., dot(texture(elements, uv * .1).rgb, vec3(1)));
+	//COLOR.g += max(0., dot(texture(elements, uv * 10.).rgb, vec3(1)));
+	COLOR.rgb += texture(elements, uv).rgb;
+	COLOR.a *= .2;
 }"
 
 [sub_resource type="ShaderMaterial" id=2]
