@@ -8,7 +8,7 @@ render_mode unshaded;
 
 uniform float elapsed_time;
 uniform vec2 canvas_size;
-uniform sampler2D fluid_tex;
+uniform sampler3D fluid_tex;
 uniform sampler2D solid_tex;
 
 float smin( float a, float b, float k )
@@ -23,6 +23,7 @@ float circle(vec2 p) {
 
 void fragment() {
 	float aspect_ratio = canvas_size.x / canvas_size.y;
+	vec3 fluid_tex_size = vec3(textureSize(fluid_tex, 0).xyz);
 	vec2 uv = vec2(UV.x * aspect_ratio, UV.y);
 	COLOR = vec4(0, 0, 0, 1);
 	
@@ -42,11 +43,16 @@ void fragment() {
 		COLOR.rgb = vec3(.5, .7, 1) * vec3(1. + .1 * highlight);
 	} else {
 		float d = 1000.;
-		for (int x = 0; x < textureSize(fluid_tex, 0).x; ++x) {
-			vec4 fluid = texture(fluid_tex, vec2(float(x) / 128., .0));
-			if (fluid.b == 0.)
-				break;
-			d = smin(d, circle(uv - fluid.xy) - .01, .075);
+		vec2 gv = floor(uv * 20.);
+		for (float x = gv.x-1.; x < gv.x+2.; ++x) {
+			for (float y = gv.y-1.; y < gv.y+2.; ++y) {
+				for (float z = 0.; z < 8.; ++z) {
+					vec4 fluid = texture(fluid_tex, vec3(x, y, z) / fluid_tex_size);
+					if (fluid.b == 0.)
+						break;
+					d = smin(d, circle(uv - fluid.xy) - .01, .075);
+				}
+			}
 		}
 
 		float height = sin((uv.x + uv.y) * 20.  + elapsed_time * 5.) * .5 + .5;

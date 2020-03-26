@@ -21,10 +21,7 @@ func _ready():
 		for y in range(10):
 			_add_fluid(Vector2(x*30+200, y*30+200))
 
-func _physics_process(delta):
-	for f in fluids:
-		f.sub_physics_process(delta)
-
+func create_grid():
 	var grid = []
 	for x in range(FLUID_GRID_SIZE_X):
 		for y in range(FLUID_GRID_SIZE_Y):
@@ -33,6 +30,13 @@ func _physics_process(delta):
 	for f in fluids:
 		var p = (f.position / FLUID_CELL_SIZE).floor()
 		grid[p.x + p.y * FLUID_GRID_SIZE.x].append(f)
+	return grid
+
+func _physics_process(delta):
+	for f in fluids:
+		f.sub_physics_process(delta)
+
+	var grid = create_grid()
 	
 	var dx = int(REPEL_DISTANCE / FLUID_CELL_SIZE.x) + 1
 	var dy = int(REPEL_DISTANCE / FLUID_CELL_SIZE.y) + 1
