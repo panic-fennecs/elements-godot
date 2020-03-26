@@ -2,15 +2,15 @@
 
 [ext_resource path="res://src/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://src/player/ForceCursor.tscn" type="PackedScene" id=2]
-[ext_resource path="res://res/images/player2.png" type="Texture" id=3]
-[ext_resource path="res://res/images/player1.png" type="Texture" id=4]
+[ext_resource path="res://res/images/player_idle/player_idle1.png" type="Texture" id=3]
+[ext_resource path="res://res/images/player_idle/player_idle2.png" type="Texture" id=4]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
-"frames": [ ExtResource( 4 ), ExtResource( 3 ) ],
+"frames": [ ExtResource( 3 ), ExtResource( 4 ) ],
 "loop": true,
 "name": "default",
-"speed": 5.0
+"speed": 2.0
 } ]
 
 [sub_resource type="CapsuleShape2D" id=2]
@@ -23,7 +23,6 @@ script = ExtResource( 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 1
 frames = SubResource( 1 )
-frame = 1
 playing = true
 
 [node name="CollisionPolygon2D" type="CollisionShape2D" parent="."]
