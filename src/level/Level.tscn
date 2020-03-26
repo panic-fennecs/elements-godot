@@ -1,13 +1,19 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/level/Level.gd" type="Script" id=2]
+[ext_resource path="res://src/level/ElementRenderer.tscn" type="PackedScene" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 512.393, 50.1703 )
 
 [node name="Level" type="Node2D"]
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_vertical_guides_": [ -121.0 ]
+}
+
+[node name="ElementRenderer" parent="." instance=ExtResource( 3 )]
 
 [node name="Floor" type="StaticBody2D" parent="."]
 position = Vector2( 0, 500 )
@@ -25,3 +31,4 @@ shape = SubResource( 1 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 66.2978, 471.451 )
+player_color = Color( 0.839216, 0.47451, 0.47451, 1 )
