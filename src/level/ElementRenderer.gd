@@ -18,15 +18,15 @@ func _process(delta):
 	$Canvas.rect_size = canvas_size
 	$Canvas.material.set_shader_param("canvas_size", canvas_size)
 	
-	var elements = get_parent().elements
+	var elements = $"../FluidManager".fluids
 	var img = Image.new()
 	img.create(128, 1, false, Image.FORMAT_RGBAF)
 	
 	img.fill(Color.black)
 	img.lock()
 	var x = 0
-	for element in get_parent().elements:
-		if x < 128 and element.is_fluid():
+	for element in elements:
+		if x < 128:
 			var pos = element.position / canvas_size * Vector2(aspect_ratio, 1)
 			img.set_pixel(x, 0, Color(pos.x, pos.y, 1, 1))
 			x = x + 1
