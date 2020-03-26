@@ -1,10 +1,13 @@
 extends Node2D
 
-const REPEL_DISTANCE = 10
+const REPEL_DISTANCE = 5
 
 var p = preload("res://src/level/Element.tscn")
 
 var elements = []
+
+func size():
+	return get_viewport().size
 
 func _add_elem(pos):
 	var element = p.instance()
@@ -23,8 +26,8 @@ func _physics_process(delta):
 		for e2 in elements:
 			var v = e1.position - e2.position
 			if v.length() <= REPEL_DISTANCE:
-				e1.apply_force(v / 1000)
-				e2.apply_force(-v / 1000)
+				e1.apply_force(v / 100)
+				e2.apply_force(-v / 100)
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
