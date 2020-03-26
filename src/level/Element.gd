@@ -4,7 +4,8 @@ var velocity = Vector2(0, 0)
 var temperature = 20
 
 func apply_force(f):
-	velocity += f
+	if is_fluid():
+		velocity += f
 
 func is_solid():
 	return temperature < 0
@@ -13,11 +14,13 @@ func is_fluid():
 	return !is_solid()
 
 func _physics_process(delta):
+	if is_solid():
+		velocity = Vector2(0, 0)
+		return
 	position += velocity
 	velocity *= 0.99
 
-	if is_fluid():
-		velocity += Vector2(0, 0.2)
+	velocity += Vector2(0, 0.2)
 	stay_in_view()
 
 func stay_in_view():

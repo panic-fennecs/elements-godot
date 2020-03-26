@@ -9,17 +9,27 @@ var elements = []
 func size():
 	return get_viewport().size
 
-func _add_elem(pos):
+func _add_fluid(pos):
 	var element = p.instance()
 	element.position = pos
 	elements.append(element)
 	add_child(element)
 
+func _add_solid(pos):
+	var element = p.instance()
+	element.position = pos
+	elements.append(element)
+	element.temperature = -20
+	add_child(element)
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	for x in range(int(size().x)/100):
+		for y in range(10):
+			_add_solid(Vector2(x*100, 900 + y*10))
 	for x in range(10):
 		for y in range(10):
-			_add_elem(Vector2(x+200, y+200))
+			_add_fluid(Vector2(x+200, y+200))
 
 func _physics_process(delta):
 	for e1 in elements:
