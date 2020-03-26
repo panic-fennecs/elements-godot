@@ -1,19 +1,17 @@
 extends Node2D
 
 const REPEL_DISTANCE = 40
-const GRID_SIZE_X = 20
-const GRID_SIZE_Y = 20
+const GRID_SIZE_X = 30
+const GRID_SIZE_Y = 30
 const GRID_SIZE = Vector2(GRID_SIZE_X, GRID_SIZE_Y)
+const WORLD_SIZE = Vector2(2*956, 1045)
 
 var p = preload("res://src/level/Element.tscn")
 
 var elements = []
 
-func size():
-	return get_viewport().size
-
 func CELL_SIZE():
-	return size() / Vector2(GRID_SIZE_X, GRID_SIZE_Y)
+	return WORLD_SIZE / Vector2(GRID_SIZE_X, GRID_SIZE_Y)
 
 func _add_fluid(pos):
 	var element = p.instance()
@@ -30,7 +28,7 @@ func _add_solid(pos):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	for x in range(int(size().x)/10):
+	for x in range(int(WORLD_SIZE.x)/10):
 		for y in range(10):
 			_add_solid(Vector2(x*10, 900 + y*10))
 	for x in range(10):
@@ -38,8 +36,6 @@ func _ready():
 			_add_fluid(Vector2(x*30+200, y*30+200))
 
 func _physics_process(delta):
-	if size().length() == 0: return
-
 	for e in elements:
 		e.sub_physics_process(delta)
 	var grid = []

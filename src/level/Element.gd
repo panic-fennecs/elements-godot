@@ -25,20 +25,21 @@ func sub_physics_process(delta):
 	stay_in_view()
 
 func stay_in_view():
-	var level_size = get_node("/root/Main/Level").size()
+	var level_size = get_node("/root/Main/Level").WORLD_SIZE
 	if position.x < 0:
 		position.x = 0
 		if velocity.x < 0:
-			velocity.x = 0
+			velocity.x = 1
 	if position.y < 0:
 		position.y = 0
 		if velocity.y < 0:
-			velocity.y = 0
+			velocity.y = 1
 	if position.x > level_size.x:
 		position.x = level_size.x-1
 		if velocity.x > 0:
-			velocity.x = 0
+			velocity.x = -1
 	if position.y > level_size.y:
 		position.y = level_size.y-1
 		if velocity.y > 0:
-			velocity.y = 0
+			velocity.y = -1
+	# choosing 1 and -1 as fallbacks makes the elements get some distance from the world border
