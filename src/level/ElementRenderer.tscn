@@ -24,13 +24,7 @@ float circle(vec2 p) {
 void fragment() {
 	float aspect_ratio = canvas_size.x / canvas_size.y;
 	vec2 uv = vec2(UV.x * aspect_ratio, UV.y);
-	COLOR = vec4(0, 0, 0, 1);
-	
-	//COLOR += d * vec4(.2, .4, .8, 1);
-	//COLOR.r += smoothstep(.5, .51, uv.x);
-	//COLOR.b += smoothstep(.5, .51, uv.y);
-	
-	
+	COLOR = vec4(.09, .17, .22, 1);
 
 	vec4 solid = texture(solid_tex, uv);
 	if (solid.r > 0.) {
