@@ -25,3 +25,4 @@ shape = SubResource( 1 )
 
 [node name="Player" parent="." instance=ExtResource( 1 )]
 position = Vector2( 66.2978, 471.451 )
+player_color = Color( 0.839216, 0.47451, 0.47451, 1 )
