@@ -24,9 +24,9 @@ func _add_solid(pos):
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	for x in range(int(size().x)/100):
+	for x in range(int(size().x)/10):
 		for y in range(10):
-			_add_solid(Vector2(x*100, 900 + y*10))
+			_add_solid(Vector2(x*10, 900 + y*10))
 	for x in range(10):
 		for y in range(10):
 			_add_fluid(Vector2(x+200, y+200))
