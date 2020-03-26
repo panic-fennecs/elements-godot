@@ -1,10 +1,10 @@
 extends Node2D
 
 const REPEL_DISTANCE = 40
-const GRID_SIZE_X = 30
-const GRID_SIZE_Y = 30
+const GRID_SIZE_X = 20
+const GRID_SIZE_Y = 20
 const GRID_SIZE = Vector2(GRID_SIZE_X, GRID_SIZE_Y)
-var CELL_SIZE = null
+onready var CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / GRID_SIZE
 
 var p = preload("res://src/level/Fluid.tscn")
 
@@ -17,7 +17,6 @@ func _add_fluid(pos):
 	add_child(fluid)
 
 func _ready():
-	CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / GRID_SIZE
 	for x in range(10):
 		for y in range(10):
 			_add_fluid(Vector2(x*30+200, y*30+200))
@@ -40,7 +39,6 @@ func _physics_process(delta):
 
 	for i in range(len(grid)):
 		for f1 in grid[i]:
-			if f1.is_solid(): continue
 			var x1 = i % GRID_SIZE_X
 			var y1 = i / GRID_SIZE_X
 			var x2min = max(0, x1 - dx)
