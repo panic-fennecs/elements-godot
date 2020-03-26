@@ -13,21 +13,25 @@ func _ready():
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	var canvas_size = get_viewport().size
+	var aspect_ratio = canvas_size.x / canvas_size.y
+	
 	$Canvas.rect_size = canvas_size
 	$Canvas.material.set_shader_param("canvas_size", canvas_size)
 	
 	var elements = get_parent().elements
 	var img = Image.new()
-	img.create(128, 128, false, Image.FORMAT_RGBA8)
+	img.create(128, 1, false, Image.FORMAT_RGBAF)
 	
 	img.fill(Color.black)
 	img.lock()
+	var x = 0
 	for element in get_parent().elements:
-		print(element)
-	img.set_pixel(0, 0, Color.white)
-	img.set_pixel(2, 0, Color.white)
+		if x < 128 and element.is_fluid():
+			var pos = element.position / canvas_size * Vector2(aspect_ratio, 1)
+			img.set_pixel(x, 0, Color(pos.x, pos.y, 1, 1))
+			x = x + 1
 	img.unlock()
 	
 	var tex = ImageTexture.new()
-	var a = tex.create_from_image(img)
-	$Canvas.material.set_shader_param("elements", tex)
+	tex.create_from_image(img, 0)
+	$Canvas.material.set_shader_param("elements_tex", tex)
