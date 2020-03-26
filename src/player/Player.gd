@@ -3,11 +3,11 @@ extends KinematicBody2D
 export(Color) var player_color: Color = Color.white
 export(int) var player_id: int
 
-const GRAVITY: float = 5.0
-const MOVEMENT_FORCE: float = 20.0
-const JUMP_FORCE: float = 200.0
-const DRAG: float = 10.0
-const MAX_SPEED: float = 200.0
+const GRAVITY: float = 1.0
+const MOVEMENT_FORCE: float = 10.0
+const JUMP_FORCE: float = 80.0
+const DRAG: float = 3.0
+const MAX_SPEED: float = 50.0
 const AIM_DISTANCE: float = 100.0
 
 var _velocity: Vector2 = Vector2.ZERO
