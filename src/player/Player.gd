@@ -9,6 +9,7 @@ const JUMP_FORCE: float = 80.0
 const DRAG: float = 3.0
 const MAX_SPEED: float = 50.0
 const AIM_DISTANCE: float = 100.0
+const IDLE_SPEED = 0.1
 
 var _velocity: Vector2 = Vector2.ZERO
 
@@ -17,8 +18,8 @@ func _ready():
 	$AnimatedSprite.self_modulate = player_color
 
 func _physics_process(_delta) -> void:
-	if _velocity.x > 0: _velocity.x = max(0, _velocity.x - DRAG) 
-	if _velocity.x < 0: _velocity.x = min(0, _velocity.x + DRAG) 
+	if _velocity.x > 0: _velocity.x = max(0, _velocity.x - DRAG)
+	if _velocity.x < 0: _velocity.x = min(0, _velocity.x + DRAG)
 	
 	if is_on_floor():
 		_velocity.y = 0
@@ -42,6 +43,11 @@ func _physics_process(_delta) -> void:
 	if _velocity.x > MAX_SPEED: _velocity.x = MAX_SPEED
 	if _velocity.x < -MAX_SPEED: _velocity.x = -MAX_SPEED
 	_velocity = move_and_slide(_velocity, Vector2.UP)
+
+	if abs(_velocity.x) < IDLE_SPEED:
+		$AnimatedSprite.play("idle")
+	else:
+		$AnimatedSprite.play("run")
 
 func _process(delta) -> void:
 	# todo idk perhaps this need also needs to be set into the physics loop

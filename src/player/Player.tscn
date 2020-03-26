@@ -16,12 +16,12 @@ animations = [ {
 "frames": [ ExtResource( 3 ), ExtResource( 4 ) ],
 "loop": true,
 "name": "idle",
-"speed": 2.0
+"speed": 4.0
 }, {
 "frames": [ ExtResource( 6 ), ExtResource( 5 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ) ],
 "loop": true,
 "name": "run",
-"speed": 5.0
+"speed": 8.0
 } ]
 
 [sub_resource type="CapsuleShape2D" id=2]
@@ -35,7 +35,7 @@ script = ExtResource( 1 )
 z_index = 1
 frames = SubResource( 1 )
 animation = "run"
-frame = 1
+frame = 3
 playing = true
 
 [node name="CollisionPolygon2D" type="CollisionShape2D" parent="."]
