@@ -5,7 +5,8 @@ var temperature = 20
 
 func apply_force(f):
 	if is_fluid():
-		velocity += f
+		var pressure = 1 / max(0.01, f.length())
+		velocity += f.normalized() * 10 * pressure
 
 func is_solid():
 	return temperature < 0
@@ -13,7 +14,7 @@ func is_solid():
 func is_fluid():
 	return !is_solid()
 
-func _physics_process(delta):
+func sub_physics_process(delta):
 	if is_solid():
 		velocity = Vector2(0, 0)
 		return
@@ -34,10 +35,10 @@ func stay_in_view():
 		if velocity.y < 0:
 			velocity.y = 0
 	if position.x > level_size.x:
-		position.x = level_size.x
+		position.x = level_size.x-1
 		if velocity.x > 0:
 			velocity.x = 0
 	if position.y > level_size.y:
-		position.y = level_size.y
+		position.y = level_size.y-1
 		if velocity.y > 0:
 			velocity.y = 0
