@@ -15,3 +15,6 @@ func _ready():
 	for x in range(SOLID_GRID_SIZE_X):
 		for y in range(10):
 			solid_grid[x + (SOLID_GRID_SIZE_Y-y-1) * SOLID_GRID_SIZE_X] = true
+
+func get_cell(x, y):
+	return solid_grid[x + y * SOLID_GRID_SIZE_X]
