@@ -7,7 +7,6 @@ code = "shader_type canvas_item;
 render_mode unshaded;
 
 uniform float elapsed_time;
-uniform vec2 canvas_size;
 uniform sampler3D fluid_tex;
 uniform sampler2D solid_tex;
 
@@ -40,13 +39,13 @@ float circle(vec2 p) {
 }
 
 void fragment() {
-	float aspect_ratio = canvas_size.x / canvas_size.y;
+	float aspect_ratio = 16. / 9.;
 	vec2 aspect = vec2(aspect_ratio, 1);
-	vec2 uv = vec2(UV.x * aspect_ratio, UV.y);
+	vec2 uv = UV.xy * aspect;
 	vec3 fluid_tex_size = vec3(textureSize(fluid_tex, 0).xyz);
 	vec2 fluid_id = floor(UV.xy * fluid_tex_size.xy);
 	COLOR = vec4(.09, .17, .22, 1);
-	//COLOR = vec4(fluid_id.xy * .05, .22, 1);
+	//COLOR = vec4(fluid_id.xy / fluid_tex_size.xy, .22, 1);
 
 	vec4 solid = texture(solid_tex, UV.xy);
 	if (solid.r > 0.) {
@@ -88,7 +87,6 @@ void fragment() {
 [sub_resource type="ShaderMaterial" id=2]
 shader = SubResource( 1 )
 shader_param/elapsed_time = null
-shader_param/canvas_size = null
 
 [node name="ElementRenderer" type="Node2D"]
 script = ExtResource( 1 )

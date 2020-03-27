@@ -1,7 +1,6 @@
 extends Node2D
 
 const REPEL_DISTANCE = 40
-const FLUID_PARTICLE_COUNT = 100
 const FLUID_GRID_SIZE_X = 30
 const FLUID_GRID_SIZE_Y = 20
 const FLUID_GRID_SIZE_Z = 8
@@ -93,7 +92,7 @@ func apply_water_to_water_repel():
 			var x2min = max(0, x1 - dx)
 			var x2max = min(FLUID_GRID_SIZE_X, x1 + dx + 1)
 			var y2min = max(0, y1 - dy)
-			var y2max = min(FLUID_GRID_SIZE_X, y1 + dy + 1)
+			var y2max = min(FLUID_GRID_SIZE_Y, y1 + dy + 1)
 			for x2 in range(x2min, x2max):
 				for y2 in range(y2min, y2max):
 					for f2 in grid[x2 + y2 * FLUID_GRID_SIZE_X]:

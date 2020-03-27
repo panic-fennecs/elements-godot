@@ -6,19 +6,14 @@ func _ready():
 	pass
 
 func _process(delta):
+	var world_size = $"/root/Main/Level".WORLD_SIZE
+	
 	var elapsed_time = (OS.get_ticks_msec() - start_time) / 1000.0; # seconds
 	$Canvas.material.set_shader_param("elapsed_time", elapsed_time)
-
-	var canvas_size = get_viewport().size
-	var aspect_ratio = canvas_size.x / canvas_size.y
-	
-	#$Canvas.rect_size = canvas_size
-	$Canvas.material.set_shader_param("canvas_size", canvas_size)
 
 	var fluid_manager = $"../FluidManager"
 	var fluid_grid = fluid_manager.create_grid()
 	var fluid_tex = Texture3D.new()
-	#fluid_tex.create(fluid_manager.FLUID_GRID_SIZE_X, fluid_manager.FLUID_GRID_SIZE_Y, fluid_manager.FLUID_GRID_SIZE_Z, Image.FORMAT_RGBAF)
 	fluid_tex.create(fluid_manager.FLUID_GRID_SIZE_X, fluid_manager.FLUID_GRID_SIZE_Y, fluid_manager.FLUID_GRID_SIZE_Z, Image.FORMAT_RGBAF, 0)
 
 	for z in range(fluid_manager.FLUID_GRID_SIZE_Z):
@@ -31,7 +26,7 @@ func _process(delta):
 			for y in range(fluid_manager.FLUID_GRID_SIZE_Y):
 				var fluid = fluid_manager.get_fluid(fluid_grid, Vector3(x, y, z))
 				if fluid:
-					var pos = fluid.position / $"/root/Main/Level".WORLD_SIZE
+					var pos = fluid.position / world_size
 					fluid_img.set_pixel(x, y, Color(pos.x, pos.y, 1, 1))
 
 		fluid_img.unlock()
