@@ -1,13 +1,13 @@
 extends Node2D
 
 const REPEL_DISTANCE = 40
-const FLUID_GRID_SIZE_X = 30
-const FLUID_GRID_SIZE_Y = 20
-const FLUID_GRID_SIZE_Z = 8
+const FLUID_GRID_SIZE_X = 16
+const FLUID_GRID_SIZE_Y = 9
+const FLUID_GRID_SIZE_Z = 16
 const FLUID_GRID_SIZE = Vector2(FLUID_GRID_SIZE_X, FLUID_GRID_SIZE_Y)
 onready var FLUID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / FLUID_GRID_SIZE
 
-const PULL_RADIUS = 600
+const PULL_RADIUS = 100
 
 var p = preload("res://src/level/Fluid.tscn")
 
@@ -26,11 +26,33 @@ func get_fluid(grid, pos):
 
 func _add_fluid(player, type):
 	var fluid = p.instance()
-	fluid.init(player)
+	fluid.init(player, type)
 	fluids.append(fluid)
 	add_child(fluid)
 
 func _process(delta):
+	var freeze_radius = 4.0
+	
+	if Input.is_action_pressed("freeze_0") or Input.is_action_pressed("freeze_1"):
+		var i = len(fluids) - 1
+		while i >= 0:
+			var fluid = fluids[i]
+			var l = 10000.0
+			var solid_type
+			if Input.is_action_pressed("freeze_0") and fluid.type == FluidType.Water:
+				l = ($"/root/Main/Level/Player0/ForceCursor".global_position - fluid.position).length()
+				solid_type = $"../SolidManager".SolidType.Ice
+			elif Input.is_action_pressed("freeze_1") and fluid.type == FluidType.Lava:
+				l = ($"/root/Main/Level/Player1/ForceCursor".global_position - fluid.position).length()
+				solid_type = $"../SolidManager".SolidType.Obsidian
+			
+			if not fluid.bound_to_player and l < FLUID_GRID_SIZE_Y * freeze_radius:
+				var cell_pos = fluid.position / $"/root/Main/Level".WORLD_SIZE * $"../SolidManager".SOLID_GRID_SIZE
+				cell_pos = cell_pos.floor()
+				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y, solid_type)
+				fluids.erase(fluid)
+			i = i - 1
+				
 	counter += delta
 	while counter > 1:
 		counter -= 1

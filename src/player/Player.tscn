@@ -35,3 +35,13 @@ animation = "run"
 playing = true
 
 [node name="ForceCursor" parent="." instance=ExtResource( 2 )]
+
+[node name="Healthbar" type="ColorRect" parent="."]
+margin_left = -20.0
+margin_top = -40.0
+margin_right = 20.0
+margin_bottom = -33.0
+color = Color( 1, 0.00784314, 0.00784314, 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

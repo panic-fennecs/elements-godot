@@ -15,6 +15,7 @@ const PLAYER_SIZE = Vector2(32, 64)
 const SENSOR_DEPTH = 10
 
 var _velocity: Vector2 = Vector2.ZERO
+var health = 100
 
 func _ready():
 	if player_id == 1: $AnimatedSprite.flip_h = true
@@ -103,6 +104,7 @@ func apply_movement():
 	position += _velocity / 10
 
 func _process(delta) -> void:
+	$Healthbar.rect_size.x = PLAYER_SIZE.x * health / 100
 	# todo idk perhaps this need also needs to be set into the physics loop
 	var horizontal = Input.get_action_strength("aim_right_" + str(player_id)) - \
 		Input.get_action_strength("aim_left_" + str(player_id))

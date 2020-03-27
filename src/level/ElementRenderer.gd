@@ -27,7 +27,8 @@ func _process(delta):
 				var fluid = fluid_manager.get_fluid(fluid_grid, Vector3(x, y, z))
 				if fluid:
 					var pos = fluid.position / world_size
-					fluid_img.set_pixel(x, y, Color(pos.x, pos.y, 1, 1))
+					var type = 1 if fluid.type == fluid_manager.FluidType.Water else 2
+					fluid_img.set_pixel(x, y, Color(pos.x, pos.y, type, 1))
 
 		fluid_img.unlock()
 		fluid_tex.set_layer_data(fluid_img, z)

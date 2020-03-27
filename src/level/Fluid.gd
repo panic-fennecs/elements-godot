@@ -3,11 +3,14 @@ extends Node2D
 var bound_to_player = null
 var velocity = Vector2(0, 0)
 var temperature = 20
-onready var type = $"/root/Main/Level/FluidManager".FluidType.Water
+var type = null
 
-func init(player):
+const MAX_VELOCITY = 6
+
+func init(player, type_):
 	bound_to_player = player
 	position = player.global_position
+	type = type_
 
 func apply_force(f):
 	var pressure = 1 / max(0.01, f.length())
@@ -21,6 +24,7 @@ func apply_pull_force(f):
 func sub_physics_process(delta):
 	if bound_to_player:
 		velocity += (bound_to_player.position - position) / 10
+	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
 	position += velocity
 	velocity *= 0.99
 
