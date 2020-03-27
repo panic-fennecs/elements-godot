@@ -7,8 +7,7 @@ code = "shader_type canvas_item;
 render_mode unshaded;
 
 uniform float elapsed_time;
-uniform vec2 canvas_size;
-uniform sampler2D fluid_tex;
+uniform sampler3D fluid_tex;
 uniform sampler2D solid_tex;
 
 float smin( float a, float b, float k )
@@ -16,18 +15,39 @@ float smin( float a, float b, float k )
     float h = max( k-abs(a-b), 0.0 )/k;
     return min( a, b ) - h*h*k*(1.0/4.0);
 }
+// power smooth min (k = 8);
+float smin2( float a, float b, float k )
+{
+    a = pow( a, k ); b = pow( b, k );
+    return pow( (a*b)/(a+b), 1.0/k );
+}
+// polynomial smooth min (k = 0.1);
+float smin3( float a, float b, float k )
+{
+    float h = clamp( 0.5+0.5*(b-a)/k, 0.0, 1.0 );
+    return mix( b, a, h ) - k*h*(1.0-h);
+}
+// exponential smooth min (k = 32);
+float smin4( float a, float b, float k )
+{
+    float res = exp2( -k*a ) + exp2( -k*b );
+    return -log2( res )/k;
+}
 
 float circle(vec2 p) {
 	return length(p);
 }
 
 void fragment() {
-	float aspect_ratio = canvas_size.x / canvas_size.y;
+	float aspect_ratio = 16. / 9.;
 	vec2 aspect = vec2(aspect_ratio, 1);
-	vec2 uv = vec2(UV.x * aspect_ratio, UV.y);
+	vec2 uv = UV.xy * aspect;
+	vec3 fluid_tex_size = vec3(textureSize(fluid_tex, 0).xyz);
+	vec2 fluid_id = floor(UV.xy * fluid_tex_size.xy);
 	COLOR = vec4(.09, .17, .22, 1);
+	//COLOR = vec4(fluid_id.xy / fluid_tex_size.xy, .22, 1);
 
-	vec4 solid = texture(solid_tex, UV);
+	vec4 solid = texture(solid_tex, UV.xy);
 	if (solid.r > 0.) {
 		float highlight = sin((uv.x + uv.y) * 50.) * 1.8;
 		highlight = min(1., highlight) - fract(max(0., highlight - 1.)); // fold
@@ -36,13 +56,20 @@ void fragment() {
 		highlight *= sin((uv.y + uv.x * .42) * 40.) * .5 + .5;
 		COLOR.rgb = vec3(.5, .7, 1) * vec3(1. + .1 * highlight);
 	} else {
+		const float radius = 2.;
 		float d = 1000.;
-		for (int x = 0; x < textureSize(fluid_tex, 0).x; ++x) {
-			vec4 fluid = texture(fluid_tex, vec2(float(x) / 128., .0));
-			if (fluid.b == 0.)
-				break;
-			vec2 fluid_pos = fluid.xy * aspect;
-			d = smin(d, circle(uv - fluid_pos) - .01, .075);
+		
+		for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x, fluid_id.x + radius); ++x) {
+			for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y, fluid_id.y + radius); ++y) {
+				for (float z = 0.; z < fluid_tex_size.z; ++z) {
+					vec3 tx = (vec3(.5) + vec3(x, y, z)) / fluid_tex_size;
+					vec4 fluid = texture(fluid_tex, tx);
+					if (fluid.b == 0.)
+						break;
+					d = smin(d, circle(uv - fluid.xy * aspect) - .01, .05);
+					//d = min(d, circle(UV.xy - fluid.xy) - .01);
+				}
+			}
 		}
 
 		float height = sin((uv.x + uv.y) * 20.  + elapsed_time * 5.) * .5 + .5;
@@ -60,7 +87,6 @@ void fragment() {
 [sub_resource type="ShaderMaterial" id=2]
 shader = SubResource( 1 )
 shader_param/elapsed_time = null
-shader_param/canvas_size = null
 
 [node name="ElementRenderer" type="Node2D"]
 script = ExtResource( 1 )

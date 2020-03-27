@@ -1,8 +1,9 @@
 extends Node2D
 
 const REPEL_DISTANCE = 40
-const FLUID_GRID_SIZE_X = 20
+const FLUID_GRID_SIZE_X = 30
 const FLUID_GRID_SIZE_Y = 20
+const FLUID_GRID_SIZE_Z = 8
 const FLUID_GRID_SIZE = Vector2(FLUID_GRID_SIZE_X, FLUID_GRID_SIZE_Y)
 onready var FLUID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / FLUID_GRID_SIZE
 
@@ -14,19 +15,27 @@ enum FluidType {
 	Water,
 	Lava
 }
-
+var counter = 0
 var fluids = []
 
-func _add_fluid(pos):
+func get_fluid(grid, pos):
+	var fluid_cell = grid[pos.x + pos.y * FLUID_GRID_SIZE_X];
+	if pos.z < len(fluid_cell):
+		return fluid_cell[pos.z]
+	return null
+
+func _add_fluid(player, type):
 	var fluid = p.instance()
-	fluid.position = pos
+	fluid.init(player)
 	fluids.append(fluid)
 	add_child(fluid)
 
-func _ready():
-	for x in range(10):
-		for y in range(10):
-			_add_fluid(Vector2(x*30+200, y*30+200))
+func _process(delta):
+	counter += delta
+	while counter > 1:
+		counter -= 1
+		_add_fluid($"/root/Main/Level/Player0", FluidType.Water)
+		_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
 
 func _physics_process(delta):
 	for f in fluids:
@@ -44,6 +53,17 @@ func apply_pull(cursor):
 		if v.length_squared() <= PULL_RADIUS*PULL_RADIUS:
 			f.apply_pull_force(v)
 
+func create_grid():
+	var grid = [] 
+	for x in range(FLUID_GRID_SIZE_X):
+		for y in range(FLUID_GRID_SIZE_Y):
+			grid.append([])
+	
+	for f in fluids:
+		var p = (f.position / FLUID_CELL_SIZE).floor()
+		grid[p.x + p.y * FLUID_GRID_SIZE.x].append(f)
+	return grid
+
 func apply_ice_to_water_repel():
 	var sman = $"/root/Main/Level/SolidManager"
 	var dx = REPEL_DISTANCE / sman.SOLID_CELL_SIZE.x
@@ -60,14 +80,7 @@ func apply_ice_to_water_repel():
 					f.apply_force(v)
 
 func apply_water_to_water_repel():
-	var grid = [] 
-	for x in range(FLUID_GRID_SIZE_X):
-		for y in range(FLUID_GRID_SIZE_Y):
-			grid.append([])
-	
-	for f in fluids:
-		var p = (f.position / FLUID_CELL_SIZE).floor()
-		grid[p.x + p.y * FLUID_GRID_SIZE.x].append(f)
+	var grid = create_grid()
 	
 	var dx = int(REPEL_DISTANCE / FLUID_CELL_SIZE.x) + 1
 	var dy = int(REPEL_DISTANCE / FLUID_CELL_SIZE.y) + 1
@@ -79,7 +92,7 @@ func apply_water_to_water_repel():
 			var x2min = max(0, x1 - dx)
 			var x2max = min(FLUID_GRID_SIZE_X, x1 + dx + 1)
 			var y2min = max(0, y1 - dy)
-			var y2max = min(FLUID_GRID_SIZE_X, y1 + dy + 1)
+			var y2max = min(FLUID_GRID_SIZE_Y, y1 + dy + 1)
 			for x2 in range(x2min, x2max):
 				for y2 in range(y2min, y2max):
 					for f2 in grid[x2 + y2 * FLUID_GRID_SIZE_X]:
