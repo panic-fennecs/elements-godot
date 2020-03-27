@@ -24,8 +24,26 @@ func _ready():
 func _physics_process(delta):
 	for f in fluids:
 		f.sub_physics_process(delta)
+	apply_water_to_water_repel()
+	apply_ice_to_water_repel()
 
-	var grid = []
+func apply_ice_to_water_repel():
+	var sman = $"/root/Main/Level/SolidManager"
+	var dx = REPEL_DISTANCE / sman.SOLID_CELL_SIZE.x
+	var dy = REPEL_DISTANCE / sman.SOLID_CELL_SIZE.y
+	for f in fluids:
+		var x2min = max(0, floor(f.position.x / sman.SOLID_CELL_SIZE.x - dx))
+		var x2max = min(sman.SOLID_GRID_SIZE.x, ceil(f.position.x / sman.SOLID_CELL_SIZE.x + dx + 1))
+		var y2min = max(0, floor(f.position.y / sman.SOLID_CELL_SIZE.y - dy))
+		var y2max = min(sman.SOLID_GRID_SIZE.y, ceil(f.position.y / sman.SOLID_CELL_SIZE.y + dy + 1))
+		for x2 in range(x2min, x2max):
+			for y2 in range(y2min, y2max):
+				var v = f.position - Vector2(x2, y2) * sman.SOLID_CELL_SIZE # TODO fix offsets
+				if sman.solid_grid[x2 + y2 * sman.SOLID_GRID_SIZE_X] and v.length_squared() <= REPEL_DISTANCE*REPEL_DISTANCE:
+					f.apply_force(v)
+
+func apply_water_to_water_repel():
+	var grid = [] 
 	for x in range(FLUID_GRID_SIZE_X):
 		for y in range(FLUID_GRID_SIZE_Y):
 			grid.append([])
