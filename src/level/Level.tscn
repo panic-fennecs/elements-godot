@@ -9,6 +9,7 @@
 [node name="Level" type="Node2D"]
 script = ExtResource( 2 )
 __meta__ = {
+"_edit_lock_": true,
 "_edit_vertical_guides_": [ -121.0 ]
 }
 
