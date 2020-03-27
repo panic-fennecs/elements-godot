@@ -14,19 +14,21 @@ enum FluidType {
 	Water,
 	Lava
 }
-
+var counter = 0
 var fluids = []
 
-func _add_fluid(pos):
+func _add_fluid(player, type):
 	var fluid = p.instance()
-	fluid.position = pos
+	fluid.init(player)
 	fluids.append(fluid)
 	add_child(fluid)
 
-func _ready():
-	for x in range(10):
-		for y in range(10):
-			_add_fluid(Vector2(x*30+200, y*30+200))
+func _process(delta):
+	counter += delta
+	while counter > 1:
+		counter -= 1
+		_add_fluid($"/root/Main/Level/Player0", FluidType.Water)
+		_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
 
 func _physics_process(delta):
 	for f in fluids:
