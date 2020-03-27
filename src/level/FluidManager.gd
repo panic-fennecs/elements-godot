@@ -1,8 +1,10 @@
 extends Node2D
 
 const REPEL_DISTANCE = 40
-const FLUID_GRID_SIZE_X = 20
+const FLUID_PARTICLE_COUNT = 100
+const FLUID_GRID_SIZE_X = 30
 const FLUID_GRID_SIZE_Y = 20
+const FLUID_GRID_SIZE_Z = 8
 const FLUID_GRID_SIZE = Vector2(FLUID_GRID_SIZE_X, FLUID_GRID_SIZE_Y)
 onready var FLUID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / FLUID_GRID_SIZE
 
@@ -16,6 +18,12 @@ enum FluidType {
 }
 var counter = 0
 var fluids = []
+
+func get_fluid(grid, pos):
+	var fluid_cell = grid[pos.x + pos.y * FLUID_GRID_SIZE_X];
+	if pos.z < len(fluid_cell):
+		return fluid_cell[pos.z]
+	return null
 
 func _add_fluid(player, type):
 	var fluid = p.instance()
@@ -46,6 +54,17 @@ func apply_pull(cursor):
 		if v.length_squared() <= PULL_RADIUS*PULL_RADIUS:
 			f.apply_pull_force(v)
 
+func create_grid():
+	var grid = [] 
+	for x in range(FLUID_GRID_SIZE_X):
+		for y in range(FLUID_GRID_SIZE_Y):
+			grid.append([])
+	
+	for f in fluids:
+		var p = (f.position / FLUID_CELL_SIZE).floor()
+		grid[p.x + p.y * FLUID_GRID_SIZE.x].append(f)
+	return grid
+
 func apply_ice_to_water_repel():
 	var sman = $"/root/Main/Level/SolidManager"
 	var dx = REPEL_DISTANCE / sman.SOLID_CELL_SIZE.x
@@ -62,14 +81,7 @@ func apply_ice_to_water_repel():
 					f.apply_force(v)
 
 func apply_water_to_water_repel():
-	var grid = [] 
-	for x in range(FLUID_GRID_SIZE_X):
-		for y in range(FLUID_GRID_SIZE_Y):
-			grid.append([])
-	
-	for f in fluids:
-		var p = (f.position / FLUID_CELL_SIZE).floor()
-		grid[p.x + p.y * FLUID_GRID_SIZE.x].append(f)
+	var grid = create_grid()
 	
 	var dx = int(REPEL_DISTANCE / FLUID_CELL_SIZE.x) + 1
 	var dy = int(REPEL_DISTANCE / FLUID_CELL_SIZE.y) + 1
