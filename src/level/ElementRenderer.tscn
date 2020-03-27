@@ -38,8 +38,10 @@ void fragment() {
 		highlight *= sin((uv.y + uv.x * .42) * 40.) * .5 + .5;
 		COLOR.rgb = vec3(.5, .7, 1) * vec3(1. + .1 * highlight);
 	} else {
-		const float radius = 2.;
-		float d = 1000.;
+		const float radius = 1.;
+		float d[2];
+		d[0] = 1000.;
+		d[1] = 1000.;
 		
 		for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x, fluid_id.x + radius); ++x) {
 			for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y, fluid_id.y + radius); ++y) {
@@ -48,7 +50,7 @@ void fragment() {
 					vec4 fluid = texture(fluid_tex, tx);
 					if (fluid.b == 0.)
 						break;
-					d = smin(d, circle(uv - fluid.xy * aspect) - .01, .05);
+					d[int(fluid.b)-1] = smin(d[int(fluid.b)-1], circle(uv - fluid.xy * aspect) - .01, .05);
 					//d = min(d, circle(uv - fluid.xy * aspect) - .01);
 				}
 			}
@@ -61,8 +63,16 @@ void fragment() {
 		COLOR.rgb += mix(
 				border_color,
 				deep_color,
-				clamp(0., 1., -d * 100.))
-			* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d);
+				clamp(0., 1., -d[0] * 100.))
+			* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[0]);
+			
+		border_color = vec3(.8, .2, .15);
+		deep_color = vec3(.5, .1, .06) * vec3(1. + .4 * height);
+		COLOR.rgb += mix(
+				border_color,
+				deep_color,
+				clamp(0., 1., -d[1] * 100.))
+			* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[1]);
 	}
 }"
 
