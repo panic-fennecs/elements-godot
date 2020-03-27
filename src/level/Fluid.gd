@@ -2,10 +2,12 @@ extends Node2D
 
 var velocity = Vector2(0, 0)
 var temperature = 20
+onready var type = $"/root/Main/Level/FluidManager".FluidType.Water
 
 func apply_force(f):
 	var pressure = 1 / max(0.01, f.length())
 	velocity += f.normalized() * 10 * pressure
+
 
 func apply_pull_force(f):
 	var pressure = 1 #/ max(0.01, f.length())

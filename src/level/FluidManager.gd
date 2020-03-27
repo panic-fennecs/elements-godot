@@ -10,6 +10,11 @@ const PULL_RADIUS = 600
 
 var p = preload("res://src/level/Fluid.tscn")
 
+enum FluidType {
+	Water,
+	Lava
+}
+
 var fluids = []
 
 func _add_fluid(pos):
