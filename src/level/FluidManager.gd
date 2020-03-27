@@ -1,8 +1,8 @@
 extends Node2D
 
-const FLUID_GRID_SIZE_X = 16
-const FLUID_GRID_SIZE_Y = 9
-const FLUID_GRID_SIZE_Z = 16
+const FLUID_GRID_SIZE_X = 16*2
+const FLUID_GRID_SIZE_Y = 9*2
+const FLUID_GRID_SIZE_Z = 16/2
 const FLUID_GRID_SIZE = Vector2(FLUID_GRID_SIZE_X, FLUID_GRID_SIZE_Y)
 onready var FLUID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / FLUID_GRID_SIZE
 
@@ -47,14 +47,20 @@ func _process(delta):
 				var cell_pos = fluid.position / $"/root/Main/Level".WORLD_SIZE * $"../SolidManager".SOLID_GRID_SIZE
 				cell_pos = cell_pos.floor()
 				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y, solid_type)
+				$"../SolidManager".set_cell(cell_pos.x - 1, cell_pos.y, solid_type)
+				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y, solid_type)
+				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y - 1, solid_type)
+				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y + 1, solid_type)
+				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y - 1, solid_type)
+				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y + 1, solid_type)
+				$"../SolidManager".set_cell(cell_pos.x + 2, cell_pos.y, solid_type)
 				fluids.erase(fluid)
 			i = i - 1
 				
-	counter += delta
-	while counter > 1:
-		counter -= 1
+	counter += 1
+	if counter < 200:
 		_add_fluid($"/root/Main/Level/Player0", FluidType.Water)
-		_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
+		#_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
 
 func _physics_process(delta):
 	for f in fluids:
