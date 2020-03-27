@@ -12,7 +12,7 @@ func _process(delta):
 	var canvas_size = get_viewport().size
 	var aspect_ratio = canvas_size.x / canvas_size.y
 	
-	$Canvas.rect_size = canvas_size
+	#$Canvas.rect_size = canvas_size
 	$Canvas.material.set_shader_param("canvas_size", canvas_size)
 	
 	var fluids = $"../FluidManager".fluids
@@ -24,7 +24,7 @@ func _process(delta):
 	var x = 0
 	for fluid in fluids:
 		if x < 128:
-			var pos = fluid.position / canvas_size * Vector2(aspect_ratio, 1)
+			var pos = fluid.position / $"/root/Main/Level".WORLD_SIZE # / canvas_size * Vector2(aspect_ratio, 1)
 			fluid_img.set_pixel(x, 0, Color(pos.x, pos.y, 1, 1))
 			x = x + 1
 	fluid_img.unlock()
@@ -35,7 +35,7 @@ func _process(delta):
 	var solid_grid = solid_manager.solid_grid
 	var solid_tex = ImageTexture.new()
 	var solid_img = Image.new()
-	solid_img.create(128, 64, false, Image.FORMAT_RGBAF)
+	solid_img.create(solid_manager.SOLID_GRID_SIZE_X, solid_manager.SOLID_GRID_SIZE_Y, false, Image.FORMAT_RGBAF)
 	solid_img.fill(Color.black)
 	solid_img.lock()
 	for x in range(solid_manager.SOLID_GRID_SIZE_X):

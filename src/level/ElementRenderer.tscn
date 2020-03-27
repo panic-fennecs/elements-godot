@@ -23,16 +23,11 @@ float circle(vec2 p) {
 
 void fragment() {
 	float aspect_ratio = canvas_size.x / canvas_size.y;
+	vec2 aspect = vec2(aspect_ratio, 1);
 	vec2 uv = vec2(UV.x * aspect_ratio, UV.y);
-	COLOR = vec4(0, 0, 0, 1);
-	
-	//COLOR += d * vec4(.2, .4, .8, 1);
-	//COLOR.r += smoothstep(.5, .51, uv.x);
-	//COLOR.b += smoothstep(.5, .51, uv.y);
-	
-	
+	COLOR = vec4(.09, .17, .22, 1);
 
-	vec4 solid = texture(solid_tex, uv);
+	vec4 solid = texture(solid_tex, UV);
 	if (solid.r > 0.) {
 		float highlight = sin((uv.x + uv.y) * 50.) * 1.8;
 		highlight = min(1., highlight) - fract(max(0., highlight - 1.)); // fold
@@ -46,7 +41,8 @@ void fragment() {
 			vec4 fluid = texture(fluid_tex, vec2(float(x) / 128., .0));
 			if (fluid.b == 0.)
 				break;
-			d = smin(d, circle(uv - fluid.xy) - .01, .075);
+			vec2 fluid_pos = fluid.xy * aspect;
+			d = smin(d, circle(uv - fluid_pos) - .01, .075);
 		}
 
 		float height = sin((uv.x + uv.y) * 20.  + elapsed_time * 5.) * .5 + .5;
@@ -71,9 +67,10 @@ script = ExtResource( 1 )
 
 [node name="Canvas" type="ColorRect" parent="."]
 material = SubResource( 2 )
-margin_top = 1.0
-margin_right = 1028.0
-margin_bottom = 606.0
+margin_right = 1280.0
+margin_bottom = 720.0
+size_flags_horizontal = 0
+size_flags_vertical = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
