@@ -31,6 +31,28 @@ func _add_fluid(player, type):
 	add_child(fluid)
 
 func _process(delta):
+	var freeze_radius = 4.0
+	
+	if Input.is_action_pressed("freeze_0") or Input.is_action_pressed("freeze_1"):
+		var i = len(fluids) - 1
+		while i >= 0:
+			var fluid = fluids[i]
+			var l = 10000.0
+			var solid_type
+			if Input.is_action_pressed("freeze_0") and fluid.type == FluidType.Water:
+				l = ($"/root/Main/Level/Player0/ForceCursor".global_position - fluid.position).length()
+				solid_type = $"../SolidManager".SolidType.Ice
+			elif Input.is_action_pressed("freeze_1") and fluid.type == FluidType.Lava:
+				l = ($"/root/Main/Level/Player1/ForceCursor".global_position - fluid.position).length()
+				solid_type = $"../SolidManager".SolidType.Obsidian
+			
+			if not fluid.bound_to_player and l < FLUID_GRID_SIZE_Y * freeze_radius:
+				var cell_pos = fluid.position / $"/root/Main/Level".WORLD_SIZE * $"../SolidManager".SOLID_GRID_SIZE
+				cell_pos = cell_pos.floor()
+				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y, solid_type)
+				fluids.erase(fluid)
+			i = i - 1
+				
 	counter += delta
 	while counter > 1:
 		counter -= 1

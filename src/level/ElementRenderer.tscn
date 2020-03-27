@@ -36,15 +36,29 @@ void fragment() {
 		highlight = highlight > .85 ? 1. : 0.;
 		highlight *= sin((uv.x + uv.y * .12) * 60.) * .5 + .5;
 		highlight *= sin((uv.y + uv.x * .42) * 40.) * .5 + .5;
-		COLOR.rgb = vec3(.5, .7, 1) * vec3(1. + .1 * highlight);
+		
+		vec3 color;
+		switch(int(solid.r)) {
+		case 1: // ice
+			color = vec3(.1, .6, .9);
+			break;
+		case 2: // obsidian
+			color = vec3(.35, .02, .15);
+			break;
+		case 3: // bedrock
+			color = vec3(.2, .3, .25);
+			break;
+		}
+		
+		COLOR.rgb += color * vec3(1. + .1 * highlight);
 	} else {
 		const float radius = 1.;
 		float d[2];
 		d[0] = 1000.;
 		d[1] = 1000.;
 		
-		for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x, fluid_id.x + radius); ++x) {
-			for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y, fluid_id.y + radius); ++y) {
+		for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x - 1., fluid_id.x + radius); ++x) {
+			for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y - 1., fluid_id.y + radius); ++y) {
 				for (float z = 0.; z < fluid_tex_size.z; ++z) {
 					vec3 tx = (vec3(.5) + vec3(x, y, z)) / fluid_tex_size;
 					vec4 fluid = texture(fluid_tex, tx);

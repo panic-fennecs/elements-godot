@@ -25,3 +25,6 @@ func _ready():
 
 func get_cell(x, y):
 	return solid_grid[x + y * SOLID_GRID_SIZE_X]
+
+func set_cell(x, y, type):
+	solid_grid[x + y * SOLID_GRID_SIZE_X] = type
