@@ -7,6 +7,10 @@ func apply_force(f):
 	var pressure = 1 / max(0.01, f.length())
 	velocity += f.normalized() * 10 * pressure
 
+func apply_pull_force(f):
+	var pressure = 1 #/ max(0.01, f.length())
+	velocity -= f.normalized() * 1 * pressure
+
 func sub_physics_process(delta):
 	position += velocity
 	velocity *= 0.99

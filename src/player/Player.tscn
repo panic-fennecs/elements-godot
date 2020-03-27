@@ -35,7 +35,7 @@ script = ExtResource( 1 )
 z_index = 1
 frames = SubResource( 1 )
 animation = "run"
-frame = 2
+frame = 3
 playing = true
 
 [node name="CollisionPolygon2D" type="CollisionShape2D" parent="."]

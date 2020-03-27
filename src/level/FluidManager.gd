@@ -6,6 +6,8 @@ const FLUID_GRID_SIZE_Y = 20
 const FLUID_GRID_SIZE = Vector2(FLUID_GRID_SIZE_X, FLUID_GRID_SIZE_Y)
 onready var FLUID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / FLUID_GRID_SIZE
 
+const PULL_RADIUS = 20000
+
 var p = preload("res://src/level/Fluid.tscn")
 
 var fluids = []
@@ -24,8 +26,18 @@ func _ready():
 func _physics_process(delta):
 	for f in fluids:
 		f.sub_physics_process(delta)
+	if Input.is_action_pressed("use_force_0"):
+		apply_pull($"/root/Main/Level/Player0/ForceCursor")
+	if Input.is_action_pressed("use_force_1"):
+		apply_pull($"/root/Main/Level/Player1/ForceCursor")
 	apply_water_to_water_repel()
 	apply_ice_to_water_repel()
+
+func apply_pull(cursor):
+	for f in fluids:
+		var v = f.position - cursor.global_position
+		if v.length_squared() <= PULL_RADIUS*PULL_RADIUS:
+			f.apply_pull_force(v)
 
 func apply_ice_to_water_repel():
 	var sman = $"/root/Main/Level/SolidManager"
