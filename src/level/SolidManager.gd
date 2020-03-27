@@ -21,7 +21,11 @@ func _ready():
 	
 	for x in range(SOLID_GRID_SIZE_X):
 		for y in range(45, 55):
+<<<<<<< HEAD
 			solid_grid[x + y * SOLID_GRID_SIZE_X] = SolidType.Bedrock
+=======
+			solid_grid[x + y * SOLID_GRID_SIZE_X] = true
+>>>>>>> remove rigid body ice collider
 
 func get_cell(x, y):
 	return solid_grid[x + y * SOLID_GRID_SIZE_X]
