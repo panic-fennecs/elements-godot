@@ -6,7 +6,7 @@ const FLUID_GRID_SIZE_Y = 20
 const FLUID_GRID_SIZE = Vector2(FLUID_GRID_SIZE_X, FLUID_GRID_SIZE_Y)
 onready var FLUID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / FLUID_GRID_SIZE
 
-const PULL_RADIUS = 20000
+const PULL_RADIUS = 600
 
 var p = preload("res://src/level/Fluid.tscn")
 
