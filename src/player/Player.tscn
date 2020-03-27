@@ -1,15 +1,13 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://src/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://src/player/ForceCursor.tscn" type="PackedScene" id=2]
 [ext_resource path="res://res/images/player_idle/player_idle_color5.png" type="Texture" id=3]
 [ext_resource path="res://res/images/player_idle/player_idle_color1.png" type="Texture" id=4]
-[ext_resource path="res://res/images/player_run/player_run2.png" type="Texture" id=5]
-[ext_resource path="res://res/images/player_run/player_run1.png" type="Texture" id=6]
-[ext_resource path="res://res/images/player_run/player_run3.png" type="Texture" id=7]
-[ext_resource path="res://res/images/player_run/player_run4.png" type="Texture" id=8]
-[ext_resource path="res://res/images/player_run/player_run5.png" type="Texture" id=9]
-[ext_resource path="res://res/images/player_run/player_run6.png" type="Texture" id=10]
+[ext_resource path="res://res/images/player_run/player_run_color4.png" type="Texture" id=5]
+[ext_resource path="res://res/images/player_run/player_run_color1.png" type="Texture" id=6]
+[ext_resource path="res://res/images/player_run/player_run_color2.png" type="Texture" id=7]
+[ext_resource path="res://res/images/player_run/player_run_color3.png" type="Texture" id=8]
 [ext_resource path="res://res/images/player_idle/player_idle_color2.png" type="Texture" id=11]
 [ext_resource path="res://res/images/player_idle/player_idle_color4.png" type="Texture" id=12]
 [ext_resource path="res://res/images/player_idle/player_idle_color3.png" type="Texture" id=13]
@@ -21,7 +19,7 @@ animations = [ {
 "name": "idle",
 "speed": 10.0
 }, {
-"frames": [ ExtResource( 6 ), ExtResource( 5 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 9 ), ExtResource( 10 ) ],
+"frames": [ ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 5 ) ],
 "loop": true,
 "name": "run",
 "speed": 8.0
@@ -33,9 +31,7 @@ script = ExtResource( 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 1
 frames = SubResource( 1 )
-animation = "idle"
 animation = "run"
-frame = 2
 playing = true
 
 [node name="ForceCursor" parent="." instance=ExtResource( 2 )]
