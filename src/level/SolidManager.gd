@@ -28,7 +28,7 @@ func _ready():
 	
 	for x in range(SOLID_GRID_SIZE_X):
 		for y in range(35, 45):
-			solid_grid[x + y * SOLID_GRID_SIZE_X] = true
+			solid_grid[x + y * SOLID_GRID_SIZE_X] = SolidType.Bedrock
 			var rectangle = SolidCollider.instance()
 			rectangle.position = Vector2(x, y) * SOLID_CELL_SIZE
 			set_collider(x, y, rectangle)
