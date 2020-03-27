@@ -34,7 +34,7 @@ script = ExtResource( 1 )
 z_index = 1
 frames = SubResource( 1 )
 animation = "run"
-frame = 5
+frame = 2
 playing = true
 
 [node name="ForceCursor" parent="." instance=ExtResource( 2 )]

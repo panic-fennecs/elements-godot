@@ -5,6 +5,8 @@ var velocity = Vector2(0, 0)
 var temperature = 20
 var type = null
 
+const MAX_VELOCITY = 6
+
 func init(player, type_):
 	bound_to_player = player
 	position = player.global_position
@@ -22,6 +24,7 @@ func apply_pull_force(f):
 func sub_physics_process(delta):
 	if bound_to_player:
 		velocity += (bound_to_player.position - position) / 10
+	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
 	position += velocity
 	velocity *= 0.99
 
