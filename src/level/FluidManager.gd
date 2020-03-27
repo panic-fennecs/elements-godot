@@ -57,10 +57,11 @@ func _process(delta):
 				fluids.erase(fluid)
 			i = i - 1
 				
-	counter += 1
-	if counter < 200:
+	counter += delta
+	while counter > 1:
+		counter -= 1
 		_add_fluid($"/root/Main/Level/Player0", FluidType.Water)
-		#_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
+		_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
 
 func _physics_process(delta):
 	for f in fluids:
