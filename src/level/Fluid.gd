@@ -16,13 +16,16 @@ func init(player, type_):
 	position = player.global_position
 	type = type_
 
-const CONTACT_FLUID_DIST = 0
+const CONTACT_FLUID_DIST = 20
 func apply_contact_fluid_force(f): # vector from fluid to force-src
-	pass 
+	if (f == Vector2(0, 0)): f = Vector2(0.0001, 0)
+	var intensity = (1 - f.length() / 10) / 20
+	if intensity > 0: intensity = sqrt(intensity)
+	velocity -= f.normalized() * intensity
 
-const CONTACT_SOLID_DIST = 10
+const CONTACT_SOLID_DIST = 20
 func apply_contact_solid_force(f): # vector from fluid to force-src
-	velocity -= f / 10
+	pass # velocity -= f / 2000
 
 const CURSOR_RADIUS = 100
 func apply_bound_force(): # vector from fluid to force-src
@@ -47,6 +50,7 @@ func sub_physics_process(delta):
 
 	velocity *= 1
 	if bound_to: velocity *= 0.85
+	velocity *= 0.994
 	velocity += Vector2(0, 0.2)
 
 func apply_movement():
@@ -57,10 +61,10 @@ func apply_movement():
 		var cast = sman.raycast(position, v)
 		if cast == null:
 			position += v
-			return
+			break
 		else:
 			if t == 2:
-				return # this should not happen!
+				break # this should not happen!
 			var move_vector = cast[0] - position
 			if abs(move_vector.x) > 0.1:
 				position.x += move_vector.x * 0.95
@@ -70,7 +74,7 @@ func apply_movement():
 			var last_direction = cast[2]
 			if last_direction.length_squared() == 0:
 				velocity = Vector2.ZERO # fluid has glaitched!
-				return
+				break
 			if last_direction.x != 0:
 				velocity.x = 0
 				v.x = 0
