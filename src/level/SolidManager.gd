@@ -18,15 +18,24 @@ var solid_grid = []
 var lifetime_grid = []
 
 func _ready():
-	for x in range(SOLID_GRID_SIZE_X):
-		for y in range(SOLID_GRID_SIZE_Y):
-			solid_grid.append(SolidType.None)
-			lifetime_grid.append(null)
+	var image = Image.new()
+	image.load("res://res/map/map01.png")
 	
-	for x in range(SOLID_GRID_SIZE_X):
-		for y in range(floor(SOLID_GRID_SIZE_Y * .7), floor(SOLID_GRID_SIZE_Y * .9)):
-			if (x+y)%20 > 10:
-				solid_grid[x + y * SOLID_GRID_SIZE_X] = SolidType.Bedrock
+	image.lock()
+
+	for y in range(SOLID_GRID_SIZE_Y):
+		for x in range(SOLID_GRID_SIZE_X):
+			var color = image.get_pixel(x, y)
+			if color == Color.black:
+				solid_grid.append(SolidType.Bedrock)
+			elif color == Color.white:
+				solid_grid.append(SolidType.None)
+			else:
+				print(color)
+				assert(false)
+			lifetime_grid.append(null)
+	image.unlock()
+
 
 func get_cell(x, y):
 	return solid_grid[x + y * SOLID_GRID_SIZE_X]
