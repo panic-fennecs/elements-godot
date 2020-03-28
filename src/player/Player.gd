@@ -36,12 +36,15 @@ func up_block():
 	var s = [lt() - Vector2(0, PLAYER_SIZE.y + SENSOR_DEPTH), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
 	return check_sensor(s)
 
-func bottom_block():
+func grounded_block():
 	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
 	return check_sensor(s)
 
+func bottom_block():
+	var s = [lt() + Vector2(0, PLAYER_SIZE.y - SENSOR_DEPTH), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
+	return check_sensor(s)
+
 func check_sensor(sensor):
-	if len(sensor) == 0: return false
 	var left_top = sensor[0]
 	var size = sensor[1]
 	var sman = $"/root/Main/Level/SolidManager"
@@ -57,7 +60,7 @@ func check_sensor(sensor):
 	return false
 
 func is_on_floor():
-	return bottom_block()
+	return grounded_block()
 
 func _physics_process(_delta) -> void:
 	if _velocity.x > 0: _velocity.x = max(0, _velocity.x - DRAG)
