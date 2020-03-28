@@ -149,5 +149,7 @@ func apply_water_to_water_repel():
 							f1.apply_contact_fluid_force(v)
 
 func reset():
+	for f in fluids:
+		f.queue_free()
 	fluids = []
 	counter = 0
