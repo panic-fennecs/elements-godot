@@ -54,7 +54,7 @@ func _process(delta):
 				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y - 1, solid_type)
 				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y + 1, solid_type)
 				$"../SolidManager".set_cell(cell_pos.x + 2, cell_pos.y, solid_type)
-				fluids.erase(fluid)
+				fluid.die()
 			i = i - 1
 				
 	counter += delta
