@@ -36,7 +36,8 @@ func raycast(from, vector): # returns null or [collision-point (from + vector * 
 	var y = int(from.y / SOLID_CELL_SIZE.y)
 	var last_direction = Vector2(0, 0)
 	while true:
-		if solid_grid[x + y * SOLID_GRID_SIZE.x] != SolidType.None:
+		var i = x + y * SOLID_GRID_SIZE.x
+		if i < 0 or i >= len(solid_grid) or solid_grid[x + y * SOLID_GRID_SIZE.x] != SolidType.None:
 			return [from, Vector2(x, y), last_direction]
 		var dirx = 1
 		if vector.x < 0: dirx = 0
