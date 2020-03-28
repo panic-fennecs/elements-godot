@@ -12,7 +12,7 @@ const AIM_DISTANCE: float = 100.0
 const IDLE_SPEED = 20
 
 const PLAYER_SIZE = Vector2(32, 64)
-const SENSOR_DEPTH = 10
+const SENSOR_DEPTH = 1
 
 var _velocity: Vector2 = Vector2.ZERO
 var health = 100
@@ -29,19 +29,19 @@ func left_block():
 	return check_sensor(s)
 
 func right_block():
-	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, 0), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
+	var s = [lt() + Vector2(PLAYER_SIZE.x, 0), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
 	return check_sensor(s)
 
 func up_block():
-	var s = [lt() - Vector2(0, PLAYER_SIZE.y + SENSOR_DEPTH), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
+	var s = [lt(), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func grounded_block():
-	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
+	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH+3)]
 	return check_sensor(s)
 
 func bottom_block():
-	var s = [lt() + Vector2(0, PLAYER_SIZE.y - SENSOR_DEPTH), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
+	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func check_sensor(sensor):
