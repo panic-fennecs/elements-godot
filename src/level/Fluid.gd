@@ -66,3 +66,26 @@ func apply_movement():
 			if last_direction.y != 0:
 				velocity.y = 0
 				v.y = 0
+
+func get_enemy():
+	var fman = $"/root/Main/Level/FluidManager"
+	if type == fman.FluidType.Water:
+		return $"/root/Main/Level/Player1"
+	elif type == fman.FluidType.Lava:
+		return $"/root/Main/Level/Player0"
+
+func collides_player(player):
+	var PLAYER_SIZE = player.PLAYER_SIZE
+	return	position.x >= player.position.x - PLAYER_SIZE.x/2 and \
+			position.x <= player.position.x + PLAYER_SIZE.x/2 and \
+			position.y >= player.position.y - PLAYER_SIZE.y/2 and \
+			position.y <= player.position.y + PLAYER_SIZE.y/2
+func die():
+	$"/root/Main/Level/FluidManager".fluids.erase(self)
+	queue_free()
+
+func _process(delta):
+	var enemy = get_enemy()
+	if collides_player(enemy):
+		enemy.health -= 10
+		die()
