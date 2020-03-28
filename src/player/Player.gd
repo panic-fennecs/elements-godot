@@ -122,4 +122,4 @@ func _process(delta) -> void:
 	var vertical = Input.get_action_strength("aim_up_" + str(player_id)) - \
 		Input.get_action_strength("aim_down_" + str(player_id))
 	
-	$ForceCursor.position = Vector2(horizontal, -vertical).normalized() * AIM_DISTANCE
+	$ForceCursor.position = Vector2(horizontal, -vertical) * AIM_DISTANCE
