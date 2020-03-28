@@ -93,3 +93,9 @@ func _process(delta):
 			if lifetime_grid[i] <= 0:
 				lifetime_grid[i] = null
 				solid_grid[i] = SolidType.None
+
+func reset():
+	for i in range(len(solid_grid)):
+		lifetime_grid[i] = null
+		if solid_grid[i] == SolidType.Ice or solid_grid[i] == SolidType.Obsidian:
+			solid_grid[i] = SolidType.None

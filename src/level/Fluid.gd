@@ -20,9 +20,9 @@ const CONTACT_FLUID_DIST = 0
 func apply_contact_fluid_force(f): # vector from fluid to force-src
 	pass 
 
-const CONTACT_SOLID_DIST = 0
+const CONTACT_SOLID_DIST = 10
 func apply_contact_solid_force(f): # vector from fluid to force-src
-	pass # TODO make fluids drop down stairs
+	velocity -= f / 10
 
 const CURSOR_RADIUS = 100
 func apply_bound_force(): # vector from fluid to force-src
@@ -99,7 +99,7 @@ func die():
 func _process(delta):
 	var enemy = get_enemy()
 	if collides_player(enemy):
-		enemy.health -= 10
+		enemy.damage(10)
 		die()
 		return
 	

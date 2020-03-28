@@ -25,4 +25,21 @@ player_id = 1
 [node name="FluidManager" parent="." instance=ExtResource( 5 )]
 
 [node name="SolidManager" parent="." instance=ExtResource( 4 )]
-visible = false
+
+[node name="Player0Kills" type="Label" parent="."]
+margin_left = 6.47534
+margin_top = 2.15845
+margin_right = 126.475
+margin_bottom = 87.1584
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Player1Kills" type="Label" parent="."]
+margin_left = 1079.0
+margin_top = 6.0
+margin_right = 1277.0
+margin_bottom = 112.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

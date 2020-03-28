@@ -16,10 +16,12 @@ const SENSOR_DEPTH = 1
 
 var _velocity: Vector2 = Vector2.ZERO
 var health = 100
+var starting_pos = null
 
 func _ready():
 	if player_id == 1: $AnimatedSprite.flip_h = true
 	$AnimatedSprite.self_modulate = player_color
+	starting_pos = position
 
 func lt(): return position - PLAYER_SIZE / 2
 
@@ -123,3 +125,13 @@ func _process(delta) -> void:
 		Input.get_action_strength("aim_down_" + str(player_id))
 	
 	$ForceCursor.position = Vector2(horizontal, -vertical) * AIM_DISTANCE
+
+func damage(dmg):
+	health -= dmg
+	if health <= 0:
+		var enemy = 1-player_id
+		$"/root/Main/Level".player_won(enemy)
+
+func reset():
+	health = 100
+	position = starting_pos

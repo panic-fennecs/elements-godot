@@ -147,3 +147,7 @@ func apply_water_to_water_repel():
 						var v = f2.position - f1.position
 						if v.length_squared() <= f1.CONTACT_FLUID_DIST*f1.CONTACT_FLUID_DIST:
 							f1.apply_contact_fluid_force(v)
+
+func reset():
+	fluids = []
+	counter = 0
