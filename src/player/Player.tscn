@@ -23,26 +23,26 @@ animations = [ {
 "frames": [ ExtResource( 4 ), ExtResource( 11 ), ExtResource( 13 ), ExtResource( 12 ), ExtResource( 3 ) ],
 "loop": true,
 "name": "idle",
-"speed": 10.0
+"speed": 8.0
+}, {
+"frames": [ ExtResource( 17 ), ExtResource( 16 ) ],
+"loop": true,
+"name": "fallslow",
+"speed": 8.0
+}, {
+"frames": [ ExtResource( 14 ), ExtResource( 15 ) ],
+"loop": true,
+"name": "fall",
+"speed": 9.0
 }, {
 "frames": [ ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 5 ) ],
 "loop": true,
 "name": "run",
 "speed": 8.0
 }, {
-"frames": [ ExtResource( 17 ), ExtResource( 16 ) ],
-"loop": true,
-"name": "fallslow",
-"speed": 5.0
-}, {
 "frames": [ ExtResource( 10 ), ExtResource( 9 ) ],
 "loop": true,
 "name": "jump",
-"speed": 8.0
-}, {
-"frames": [ ExtResource( 14 ), ExtResource( 15 ) ],
-"loop": true,
-"name": "fall",
 "speed": 8.0
 } ]
 
@@ -52,8 +52,8 @@ script = ExtResource( 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 1
 frames = SubResource( 1 )
-animation = "fallslow"
-frame = 1
+animation = "run"
+frame = 3
 playing = true
 
 [node name="ForceCursor" parent="." instance=ExtResource( 2 )]
