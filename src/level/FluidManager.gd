@@ -100,6 +100,7 @@ func create_grid():
 func apply_ice_to_water_repel():
 	var sman = $"/root/Main/Level/SolidManager"
 	if len(fluids) == 0: return
+	if fluids[0].CONTACT_SOLID_DIST == 0: return
 	var dx = fluids[0].CONTACT_SOLID_DIST / sman.SOLID_CELL_SIZE.x
 	var dy = fluids[0].CONTACT_SOLID_DIST / sman.SOLID_CELL_SIZE.y
 	for f in fluids:
@@ -114,8 +115,9 @@ func apply_ice_to_water_repel():
 					f.apply_contact_solid_force(v)
 
 func apply_water_to_water_repel():
-	var grid = create_grid()
 	if len(fluids) == 0: return
+	if fluids[0].CONTACT_FLUID_DIST == 0: return
+	var grid = create_grid()
 	var dx = int(fluids[0].CONTACT_FLUID_DIST / FLUID_CELL_SIZE.x) + 1
 	var dy = int(fluids[0].CONTACT_FLUID_DIST / FLUID_CELL_SIZE.y) + 1
 

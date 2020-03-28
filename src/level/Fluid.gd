@@ -11,14 +11,13 @@ func init(player, type_):
 	position = player.global_position
 	type = type_
 
-const CONTACT_FLUID_DIST = 100
+const CONTACT_FLUID_DIST = 0
 func apply_contact_fluid_force(f): # vector from fluid to force-src
-	if f.length_squared() < 5*5:
-		velocity -= f.normalized()
+	pass 
 
-const CONTACT_SOLID_DIST = 10
+const CONTACT_SOLID_DIST = 0
 func apply_contact_solid_force(f): # vector from fluid to force-src
-	velocity -= f.normalized()
+	pass # TODO make fluids drop down stairs
 
 const CONTACT_CURSOR_DIST = 100
 func apply_contact_cursor_force(f): # vector from fluid to force-src
@@ -34,12 +33,41 @@ func sub_physics_process(delta):
 		var v = bound_to_player.position - position
 		if v.length_squared() > CONTACT_BOUND_DIST*CONTACT_BOUND_DIST: bound_to_player = null
 		else: apply_contact_bound_force(v)
-	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
-	position += velocity
-	velocity *= 0.99
 
+	apply_movement()
+
+	velocity *= 0.99
 	velocity += Vector2(0, 0.2)
 	stay_in_view()
+
+func apply_movement():
+	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
+	var sman = $"/root/Main/Level/SolidManager"
+	var v = velocity
+	for t in range(3):
+		var cast = sman.raycast(position, v)
+		if cast == null:
+			position += v
+			return
+		else:
+			if t == 2:
+				pass# this should not happen!
+			var move_vector = cast[0] - position
+			if abs(move_vector.x) > 0.1:
+				position.x += move_vector.x * 0.95
+			if abs(move_vector.y) > 0.1:
+				position.y += move_vector.y * 0.95
+			v -= move_vector
+			var last_direction = cast[2]
+			if last_direction.length_squared() == 0:
+				pass # some fluid has glitched!
+			if last_direction.x != 0:
+				velocity.x = 0
+				v.x = 0
+			if last_direction.y != 0:
+				velocity.y = 0
+				v.y = 0
+	
 
 func stay_in_view():
 	var level_size = $"/root/Main/Level".WORLD_SIZE

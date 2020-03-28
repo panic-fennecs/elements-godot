@@ -29,3 +29,42 @@ func get_cell(x, y):
 
 func set_cell(x, y, type):
 	solid_grid[x + y * SOLID_GRID_SIZE_X] = type
+
+func raycast(from, vector): # returns null or [collision-point (from + vector * alpha), colliding tile position, direction]
+	var C = 0 # 0.00000001
+	var x = int(from.x / SOLID_CELL_SIZE.x)
+	var y = int(from.y / SOLID_CELL_SIZE.y)
+	var last_direction = Vector2(0, 0)
+	while true:
+		var i = x + y * SOLID_GRID_SIZE.x
+		if i < 0 or i >= len(solid_grid) or solid_grid[x + y * SOLID_GRID_SIZE.x] != SolidType.None:
+			return [from, Vector2(x, y), last_direction]
+		var dirx = 1
+		if vector.x < 0: dirx = 0
+		var diry = 1
+		if vector.y < 0: diry = 0
+		var tx = INF
+		var ty = INF
+		if vector.x != 0: tx = ((x+dirx) * SOLID_CELL_SIZE.x - from.x) / vector.x
+		if vector.y != 0: ty = ((y+diry) * SOLID_CELL_SIZE.y - from.y) / vector.y
+
+		if from.x == x * SOLID_CELL_SIZE.x and vector.x < 0: # if position is exactly on coordinate axis
+			return [from, Vector2(x-1, y), Vector2(-1, 0)]
+		if from.y == y * SOLID_CELL_SIZE.y and vector.y < 0:
+			return [from, Vector2(x, y-1), Vector2(0, -1)]
+		assert (tx >= 0)
+		assert (ty >= 0)
+		var change = 0
+		if tx <= ty and tx <= 1:
+			var cx = int(Vector2(vector.x, 0).normalized().x)
+			x += cx
+			change = vector * (tx + C)
+			last_direction = Vector2(cx, 0)
+		elif ty < tx and ty <= 1:
+			var cy = int(Vector2(0, vector.y).normalized().y)
+			y += cy
+			change = vector * (ty + C)
+			last_direction = Vector2(0, cy)
+		else: return null
+		vector -= change
+		from += change
