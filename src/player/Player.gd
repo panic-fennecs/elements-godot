@@ -120,14 +120,12 @@ func apply_movement():
 			if t == 2:
 				break # this should not happen!
 			var move_vector = cast[0] * v
-			if abs(move_vector.x) > 0.1:
-				position.x += move_vector.x * 0.95
-			if abs(move_vector.y) > 0.1:
-				position.y += move_vector.y * 0.95
+			if move_vector.length() > 0.4:
+				position += move_vector - move_vector.normalized() * 0.4
 			v -= move_vector
 			var last_direction = cast[1]
 			if last_direction.length_squared() == 0:
-				# print("player glitched!")
+				print("player glitched!")
 				#_velocity = Vector2.ZERO # player has glaitched!
 				break
 			if last_direction.x != 0:
