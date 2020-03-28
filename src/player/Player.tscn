@@ -2,45 +2,45 @@
 
 [ext_resource path="res://src/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://src/player/ForceCursor.tscn" type="PackedScene" id=2]
-[ext_resource path="res://res/images/player_idle/player_idle_color5.png" type="Texture" id=3]
-[ext_resource path="res://res/images/player_idle/player_idle_color1.png" type="Texture" id=4]
-[ext_resource path="res://res/images/player_run/player_run_color4.png" type="Texture" id=5]
-[ext_resource path="res://res/images/player_run/player_run_color1.png" type="Texture" id=6]
-[ext_resource path="res://res/images/player_run/player_run_color2.png" type="Texture" id=7]
-[ext_resource path="res://res/images/player_run/player_run_color3.png" type="Texture" id=8]
-[ext_resource path="res://res/images/player_jump/player_jump2.png" type="Texture" id=9]
-[ext_resource path="res://res/images/player_jump/player_jump1.png" type="Texture" id=10]
-[ext_resource path="res://res/images/player_idle/player_idle_color2.png" type="Texture" id=11]
-[ext_resource path="res://res/images/player_idle/player_idle_color4.png" type="Texture" id=12]
-[ext_resource path="res://res/images/player_idle/player_idle_color3.png" type="Texture" id=13]
-[ext_resource path="res://res/images/player_fall/player_fall1.png" type="Texture" id=14]
-[ext_resource path="res://res/images/player_fall/player_fall2.png" type="Texture" id=15]
-[ext_resource path="res://res/images/player_fall/player_fall_slow2.png" type="Texture" id=16]
-[ext_resource path="res://res/images/player_fall/player_fall_slow1.png" type="Texture" id=17]
+[ext_resource path="res://res/images/player_blue/player_jump/player_jump2.png" type="Texture" id=3]
+[ext_resource path="res://res/images/player_blue/player_run/player_run2.png" type="Texture" id=4]
+[ext_resource path="res://res/images/player_blue/player_run/player_run3.png" type="Texture" id=5]
+[ext_resource path="res://res/images/player_blue/player_run/player_run1.png" type="Texture" id=6]
+[ext_resource path="res://res/images/player_blue/player_run/player_run4.png" type="Texture" id=7]
+[ext_resource path="res://res/images/player_blue/player_idle/player_idle5.png" type="Texture" id=8]
+[ext_resource path="res://res/images/player_blue/player_jump/player_jump1.png" type="Texture" id=9]
+[ext_resource path="res://res/images/player_blue/player_idle/player_idle4.png" type="Texture" id=10]
+[ext_resource path="res://res/images/player_blue/player_idle/player_idle2.png" type="Texture" id=11]
+[ext_resource path="res://res/images/player_blue/player_idle/player_idle1.png" type="Texture" id=12]
+[ext_resource path="res://res/images/player_blue/player_idle/player_idle3.png" type="Texture" id=13]
+[ext_resource path="res://res/images/player_blue/player_fall/player_fall_slow1.png" type="Texture" id=14]
+[ext_resource path="res://res/images/player_blue/player_fall/player_fall_slow2.png" type="Texture" id=15]
+[ext_resource path="res://res/images/player_blue/player_fall/player_fall2.png" type="Texture" id=16]
+[ext_resource path="res://res/images/player_blue/player_fall/player_fall1.png" type="Texture" id=17]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
-"frames": [ ExtResource( 4 ), ExtResource( 11 ), ExtResource( 13 ), ExtResource( 12 ), ExtResource( 3 ) ],
+"frames": [ ExtResource( 12 ), ExtResource( 11 ), ExtResource( 13 ), ExtResource( 10 ), ExtResource( 8 ) ],
 "loop": true,
 "name": "idle",
 "speed": 8.0
 }, {
-"frames": [ ExtResource( 17 ), ExtResource( 16 ) ],
+"frames": [ ExtResource( 14 ), ExtResource( 15 ) ],
 "loop": true,
 "name": "fallslow",
 "speed": 8.0
 }, {
-"frames": [ ExtResource( 14 ), ExtResource( 15 ) ],
+"frames": [ ExtResource( 17 ), ExtResource( 16 ) ],
 "loop": true,
 "name": "fall",
 "speed": 9.0
 }, {
-"frames": [ ExtResource( 6 ), ExtResource( 7 ), ExtResource( 8 ), ExtResource( 5 ) ],
+"frames": [ ExtResource( 6 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 7 ) ],
 "loop": true,
 "name": "run",
 "speed": 8.0
 }, {
-"frames": [ ExtResource( 10 ), ExtResource( 9 ) ],
+"frames": [ ExtResource( 9 ), ExtResource( 3 ) ],
 "loop": true,
 "name": "jump",
 "speed": 8.0
@@ -53,7 +53,7 @@ script = ExtResource( 1 )
 z_index = 1
 frames = SubResource( 1 )
 animation = "run"
-frame = 1
+frame = 3
 playing = true
 
 [node name="ForceCursor" parent="." instance=ExtResource( 2 )]
