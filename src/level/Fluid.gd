@@ -34,12 +34,35 @@ func sub_physics_process(delta):
 		var v = bound_to_player.position - position
 		if v.length_squared() > CONTACT_BOUND_DIST*CONTACT_BOUND_DIST: bound_to_player = null
 		else: apply_contact_bound_force(v)
-	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
-	position += velocity
-	velocity *= 0.99
 
+	apply_movement()
+
+	velocity *= 0.99
 	velocity += Vector2(0, 0.2)
 	stay_in_view()
+
+func apply_movement():
+	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
+	var sman = $"/root/Main/Level/SolidManager"
+	for t in range(3):
+		var cast = sman.raycast(position, velocity)
+		if cast == null:
+			position += velocity
+			return
+		else:
+			if t == 2:
+				return # this should no happen!
+			var move_vector = (cast[0] - position) * 0.95
+			position += move_vector
+			velocity -= move_vector
+			var last_direction = cast[2]
+			if (last_direction.length_squared() == 0):
+				pass # some fluid has glitched!
+			if last_direction.x != 0:
+				velocity.x = 0
+			if last_direction.y != 0:
+				velocity.y = 0
+	
 
 func stay_in_view():
 	var level_size = $"/root/Main/Level".WORLD_SIZE
