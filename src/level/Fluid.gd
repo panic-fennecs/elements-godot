@@ -90,11 +90,12 @@ func get_enemy():
 		return $"/root/Main/Level/Player0"
 
 func collides_player(player):
+	var EXTRA = 6
 	var PLAYER_SIZE = player.PLAYER_SIZE
-	return	position.x >= player.position.x - PLAYER_SIZE.x/2 and \
-			position.x <= player.position.x + PLAYER_SIZE.x/2 and \
-			position.y >= player.position.y - PLAYER_SIZE.y/2 and \
-			position.y <= player.position.y + PLAYER_SIZE.y/2
+	return	position.x + EXTRA >= player.position.x - PLAYER_SIZE.x/2 and \
+			position.x - EXTRA <= player.position.x + PLAYER_SIZE.x/2 and \
+			position.y + EXTRA >= player.position.y - PLAYER_SIZE.y/2 and \
+			position.y - EXTRA <= player.position.y + PLAYER_SIZE.y/2
 
 func die():
 	$"/root/Main/Level/FluidManager".fluids.erase(self)

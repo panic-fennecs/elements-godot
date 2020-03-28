@@ -13,6 +13,7 @@ const IDLE_SPEED = 20
 
 const PLAYER_SIZE = Vector2(27, 54)
 const SENSOR_DEPTH = 1
+const GROUNDED_SENSOR_DEPTH = 10
 
 var _velocity: Vector2 = Vector2.ZERO
 var health = 100
@@ -39,7 +40,7 @@ func up_block():
 	return check_sensor(s)
 
 func grounded_block():
-	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH+3)]
+	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func bottom_block():
@@ -75,7 +76,7 @@ func _physics_process(_delta) -> void:
 		_velocity.x += MOVEMENT_FORCE
 		$AnimatedSprite.flip_h = false
 	if Input.is_action_just_pressed("jump_" + str(player_id)) and is_on_floor():
-		_velocity.y -= JUMP_FORCE
+		_velocity.y = -JUMP_FORCE
 	if Input.is_action_just_pressed("use_force_" + str(player_id)):
 		# todo
 		pass
