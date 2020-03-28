@@ -11,10 +11,9 @@ func init(player, type_):
 	position = player.global_position
 	type = type_
 
-const CONTACT_FLUID_DIST = 100
+const CONTACT_FLUID_DIST = 0
 func apply_contact_fluid_force(f): # vector from fluid to force-src
-	if f.length_squared() < 5*5:
-		velocity -= f.normalized()
+	pass 
 
 const CONTACT_SOLID_DIST = 0
 func apply_contact_solid_force(f): # vector from fluid to force-src
@@ -52,7 +51,7 @@ func apply_movement():
 			return
 		else:
 			if t == 2:
-				pass # this should not happen!
+				assert(false) # this should not happen!
 			var move_vector = cast[0] - position
 			if abs(move_vector.x) > 0.1:
 				position.x += move_vector.x * 0.95
@@ -61,7 +60,7 @@ func apply_movement():
 			v -= move_vector
 			var last_direction = cast[2]
 			if (last_direction.length_squared() == 0):
-				pass # some fluid has glitched!
+				assert(false) # some fluid has glitched!
 			if last_direction.x != 0:
 				velocity.x = 0
 				v.x = 0

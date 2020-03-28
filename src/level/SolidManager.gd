@@ -47,6 +47,11 @@ func raycast(from, vector): # returns null or [collision-point (from + vector * 
 		var ty = INF
 		if vector.x != 0: tx = ((x+dirx) * SOLID_CELL_SIZE.x - from.x) / vector.x
 		if vector.y != 0: ty = ((y+diry) * SOLID_CELL_SIZE.y - from.y) / vector.y
+
+		if from.x == x * SOLID_CELL_SIZE.x and vector.x < 0: # if position is exactly on coordinate axis
+			return [from, Vector2(x-1, y), Vector2(-1, 0)]
+		if from.y == y * SOLID_CELL_SIZE.y and vector.y < 0:
+			return [from, Vector2(x, y-1), Vector2(0, -1)]
 		assert (tx >= 0)
 		assert (ty >= 0)
 		var change = 0
