@@ -38,7 +38,6 @@ func sub_physics_process(delta):
 
 	velocity *= 0.99
 	velocity += Vector2(0, 0.2)
-	stay_in_view()
 
 func apply_movement():
 	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
@@ -51,7 +50,7 @@ func apply_movement():
 			return
 		else:
 			if t == 2:
-				pass# this should not happen!
+				assert(false) # this should not happen!
 			var move_vector = cast[0] - position
 			if abs(move_vector.x) > 0.1:
 				position.x += move_vector.x * 0.95
@@ -60,31 +59,10 @@ func apply_movement():
 			v -= move_vector
 			var last_direction = cast[2]
 			if last_direction.length_squared() == 0:
-				pass # some fluid has glitched!
+				assert(false) # some fluid has glitched!
 			if last_direction.x != 0:
 				velocity.x = 0
 				v.x = 0
 			if last_direction.y != 0:
 				velocity.y = 0
 				v.y = 0
-	
-
-func stay_in_view():
-	var level_size = $"/root/Main/Level".WORLD_SIZE
-	if position.x < 0:
-		position.x = 0
-		if velocity.x < 0:
-			velocity.x = 1
-	if position.y < 0:
-		position.y = 0
-		if velocity.y < 0:
-			velocity.y = 1
-	if position.x >= level_size.x:
-		position.x = level_size.x-1
-		if velocity.x > 0:
-			velocity.x = -1
-	if position.y >= level_size.y:
-		position.y = level_size.y-1
-		if velocity.y > 0:
-			velocity.y = -1
-	# choosing 1 and -1 as fallbacks makes the elements get some distance from the world border
