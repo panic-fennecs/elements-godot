@@ -50,7 +50,7 @@ func apply_movement():
 			return
 		else:
 			if t == 2:
-				assert(false) # this should not happen!
+				return # this should not happen!
 			var move_vector = cast[0] - position
 			if abs(move_vector.x) > 0.1:
 				position.x += move_vector.x * 0.95
@@ -59,7 +59,8 @@ func apply_movement():
 			v -= move_vector
 			var last_direction = cast[2]
 			if last_direction.length_squared() == 0:
-				assert(false) # some fluid has glitched!
+				velocity = Vector2.ZERO # fluid has glaitched!
+				return
 			if last_direction.x != 0:
 				velocity.x = 0
 				v.x = 0
