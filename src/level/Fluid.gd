@@ -18,9 +18,9 @@ func init(player, type_):
 
 const CONTACT_FLUID_DIST = 20
 func apply_contact_fluid_force(f): # vector from fluid to force-src
-	if (f == Vector2(0, 0)): f = Vector2(0.0001, 0)
-	var intensity = (1 - f.length() / 10) / 20
-	if intensity > 0: intensity = sqrt(intensity)
+	if (f == Vector2(0, 0)):
+		f = Vector2(0.0001, 0)
+	var intensity = (0.01 / (f.length() + 1))
 	velocity -= f.normalized() * intensity
 
 const CONTACT_SOLID_DIST = 20
@@ -53,6 +53,7 @@ func sub_physics_process(delta):
 	velocity *= 0.994
 	velocity += Vector2(0, 0.2)
 
+const RANDOM_FORCE_STRENGTH = 0.04
 func apply_movement():
 	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
 	var sman = $"/root/Main/Level/SolidManager"
@@ -73,13 +74,17 @@ func apply_movement():
 			v -= move_vector
 			var last_direction = cast[2]
 			if last_direction.length_squared() == 0:
-				velocity = Vector2.ZERO # fluid has glaitched!
+				velocity = Vector2.ZERO # fluid has glitched!
 				break
 			if last_direction.x != 0:
+				var random_force = Vector2(randf()*-last_direction.x*0.7, randf()-0.5) * velocity.length_squared() * RANDOM_FORCE_STRENGTH
 				velocity.x = 0
+				velocity += random_force
 				v.x = 0
 			if last_direction.y != 0:
+				var random_force = Vector2(randf()-0.5, randf()*-last_direction.y*0.5) * velocity.length_squared() * RANDOM_FORCE_STRENGTH
 				velocity.y = 0
+				velocity += random_force
 				v.y = 0
 
 func get_enemy():
