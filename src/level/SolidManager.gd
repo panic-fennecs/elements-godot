@@ -41,6 +41,7 @@ func get_cell(x, y):
 	return solid_grid[x + y * SOLID_GRID_SIZE_X]
 
 func set_cell(x, y, type):
+	if solid_grid[x + y * SOLID_GRID_SIZE_X] == SolidType.Bedrock: return
 	solid_grid[x + y * SOLID_GRID_SIZE_X] = type
 	if type == SolidType.Ice or type == SolidType.Obsidian:
 		lifetime_grid[x + y * SOLID_GRID_SIZE_X] = LIFETIME
