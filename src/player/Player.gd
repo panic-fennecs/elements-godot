@@ -3,9 +3,9 @@ extends Node2D
 export(Color) var player_color: Color = Color.white
 export(int) var player_id: int
 
-const GRAVITY: float = 1.0
+const GRAVITY: float = 6.0
 const MOVEMENT_FORCE: float = 10.0
-const JUMP_FORCE: float = 80.0
+const JUMP_FORCE: float = 100.0
 const DRAG: float = 3.0
 const MAX_SPEED: float = 50.0
 const AIM_DISTANCE: float = 100.0
@@ -90,10 +90,13 @@ func _physics_process(_delta) -> void:
 
 	apply_movement()
 
-	if abs(_velocity.x) < IDLE_SPEED:
-		$AnimatedSprite.play("idle")
+	if is_on_floor():
+		if abs(_velocity.x) < IDLE_SPEED:
+			$AnimatedSprite.play("idle")
+		else:
+			$AnimatedSprite.play("run")
 	else:
-		$AnimatedSprite.play("run")
+		$AnimatedSprite.play("jump")
 
 func apply_movement():
 	if left_block():

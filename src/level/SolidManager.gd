@@ -21,7 +21,8 @@ func _ready():
 	
 	for x in range(SOLID_GRID_SIZE_X):
 		for y in range(floor(SOLID_GRID_SIZE_Y * .7), floor(SOLID_GRID_SIZE_Y * .9)):
-			solid_grid[x + y * SOLID_GRID_SIZE_X] = SolidType.Bedrock
+			if (x+y)%20 > 10:
+				solid_grid[x + y * SOLID_GRID_SIZE_X] = SolidType.Bedrock
 
 func get_cell(x, y):
 	return solid_grid[x + y * SOLID_GRID_SIZE_X]
