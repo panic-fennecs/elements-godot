@@ -90,7 +90,6 @@ func _physics_process(_delta) -> void:
 
 	apply_movement()
 
-	print(_velocity.y)
 	if is_on_floor():
 		if abs(_velocity.x) < IDLE_SPEED:
 			$AnimatedSprite.play("idle")
@@ -98,13 +97,10 @@ func _physics_process(_delta) -> void:
 			$AnimatedSprite.play("run")
 	else:
 		if _velocity.y < -30:
-			print("jump")
 			$AnimatedSprite.play("jump")
 		elif _velocity.y < 30:
-			print("fallslow")
 			$AnimatedSprite.play("fallslow")
 		else:
-			print("fall")
 			$AnimatedSprite.play("fall")
 
 func apply_movement():
