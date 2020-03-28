@@ -61,7 +61,7 @@ func apply_movement():
 			v -= move_vector
 			var last_direction = cast[2]
 			if (last_direction.length_squared() == 0):
-				assert(false) # some fluid has glitched!
+				pass # some fluid has glitched!
 			if last_direction.x != 0:
 				velocity.x = 0
 				v.x = 0
