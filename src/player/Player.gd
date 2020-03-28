@@ -11,7 +11,7 @@ const MAX_SPEED: float = 50.0
 const AIM_DISTANCE: float = 100.0
 const IDLE_SPEED = 20
 
-const PLAYER_SIZE = Vector2(32, 64)
+const PLAYER_SIZE = Vector2(27, 54)
 const SENSOR_DEPTH = 1
 
 var _velocity: Vector2 = Vector2.ZERO

@@ -93,8 +93,9 @@ script = ExtResource( 1 )
 z_index = 1
 frames = SubResource( 1 )
 animation = "run1"
-frame = 1
+frame = 2
 playing = true
+offset = Vector2( 0, -5 )
 
 [node name="ForceCursor" parent="." instance=ExtResource( 2 )]
 
