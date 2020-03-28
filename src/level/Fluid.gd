@@ -1,7 +1,7 @@
 extends Node2D
 
 const LIFETIME = 2
-const ANCHOR_DIST = 4
+const ANCHOR_DIST = 30
 const ENEMY_DAMAGE = 5
 
 var bound_to = null # may be null / player / cursor
