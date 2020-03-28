@@ -73,9 +73,10 @@ void fragment() {
 			}
 		}
 
-		float height = sin((uv.x + uv.y) * 20. + elapsed_time * 5.) * .5 + .5 + sum[0] * sum[0] * .02;
-		vec3 border_color = vec3(.2, .5, .8);
-		vec3 deep_color = vec3(.1, .2, .6) * (1. + height * .5);
+		float depth = sum[0] * sum[0] * .02;
+		float wave = smoothstep(.02, .001, -d[0]) * abs(sin(d[0] * 400. - elapsed_time * 1.87) + sin(d[0] * 700. + elapsed_time) * .5);
+		vec3 border_color = vec3(.5, .6, .73);
+		vec3 deep_color = vec3(.1, .2, .6) * (1. + depth * .5) + wave * .4;
 
 		COLOR.rgb += mix(
 				border_color,
@@ -83,9 +84,8 @@ void fragment() {
 				clamp(0., 1., -d[0] * 100.))
 			* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[0]);
 			
-		height = sin((uv.x + uv.y) * 20. + elapsed_time * 5.) * .5 + .5 + sum[1] * sum[1] * .1;
-		border_color = vec3(.8, .2, .15);
-		deep_color = vec3(.5, .1, .06) * (1. + height * .1);
+		border_color = vec3(.4, .3, .3) * .7;
+		deep_color = vec3(.5, .1, .06);
 		COLOR.rgb += mix(
 				border_color,
 				deep_color,
