@@ -16,89 +16,137 @@ float smin( float a, float b, float k )
     return min( a, b ) - h*h*k*(1.0/4.0);
 }
 
+float smin2( float a, float b, float k )
+{
+    float res = exp2( -k*a ) + exp2( -k*b );
+    return -log2( res )/k;
+}
+
 float circle(vec2 p) {
 	return length(p);
+}
+
+float rectangle(vec2 p, vec2 r)
+{
+	return length(max(vec2(0), abs(p) - r));
+	//p = abs(p) - r;
+	//return max(p.x, p.y);
+}
+
+vec3 blend(vec3 prev, vec4 next)
+{
+	return mix(prev, next.xyz, next.a);
+}
+
+float n21(vec2 co) {
+    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
 void fragment() {
 	float aspect_ratio = 16. / 9.;
 	vec2 aspect = vec2(aspect_ratio, 1);
-	vec2 uv = UV.xy * aspect;
+	vec2 sv = UV.xy;
+	vec2 uv = sv * aspect;
+	vec2 solid_tex_size = vec2(textureSize(solid_tex, 0).xy);
 	vec3 fluid_tex_size = vec3(textureSize(fluid_tex, 0).xyz);
 	// pixelate
 	//uv = floor(uv * fluid_tex_size.y * 16.) / fluid_tex_size.y / 16.;
-	vec2 fluid_id = floor(UV.xy * fluid_tex_size.xy);
+	vec2 pixel_id = floor(uv * 400.) / 400.;
+	vec2 solid_id = floor(sv * solid_tex_size);
+	vec2 solid_gv = fract(sv * solid_tex_size) - .5;
+	vec2 fluid_id = floor(sv * fluid_tex_size.xy);
 	COLOR = vec4(.09, .17, .22, 1);
 	//COLOR = vec4(fluid_id.xy / fluid_tex_size.xy, .22, 1);
+	
+	// fluids
 
-	vec4 solid = texture(solid_tex, UV.xy);
+	const float radius = 1.;
+	float d2[2] = {1000., 1000.};
+	float sum[2] = {0., 0.};
+	
+	for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x - 1., fluid_id.x + radius); ++x) {
+		for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y - 1., fluid_id.y + radius); ++y) {
+			for (float z = 0.; z < fluid_tex_size.z; ++z) {
+				vec3 tx = (vec3(.5) + vec3(x, y, z)) / fluid_tex_size;
+				vec4 fluid = texture(fluid_tex, tx);
+				if (fluid.b == 0.)
+					break;
+				int index = int(fluid.b)-1;
+				d2[index] = smin(d2[index], circle(uv - fluid.xy * aspect) - .01, .07);
+				sum[index] += max(0., 1. - circle(uv - fluid.xy * aspect) * fluid_tex_size.y);
+				//d = min(d, circle(uv - fluid.xy * aspect) - .01);
+			}
+		}
+	}
+
+	float depth = min(1., sum[0] * sum[0] * .01);
+	float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[0]) * abs(sin(d2[0] * 337. - elapsed_time * 1.87) + sin(d2[0] * 700. + elapsed_time) * .5);
+	vec3 border_color = vec3(.5, .6, .8);
+	vec3 deep_color = vec3(.1, .2, .6) * (1.5 - depth) + wave * .5;
+
+	COLOR.rgb = blend(COLOR.rgb, vec4(
+		mix(
+			border_color,
+			deep_color,
+			clamp(0., 1., -d2[0] * 100.)
+		),
+		smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[0])));
+
+	depth = min(1., sum[1] * sum[1] * .01);
+	wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[1]) * abs(sin(d2[1] * 337. - elapsed_time * 1.87) + sin(d2[1] * 700. + elapsed_time) * .5);
+	border_color = vec3(.8, .6, .5);
+	deep_color = vec3(.6, .2, .1) * (1.5 - depth) + wave * .5;
+
+	COLOR.rgb = blend(COLOR.rgb, vec4(
+		mix(
+			border_color,
+			deep_color,
+			clamp(0., 1., -d2[1] * 100.)
+		),
+		smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[1])));
+
+	// solids
+
+	vec4 solid = texture(solid_tex, sv);
 	if (solid.r > 0.) {
-		float highlight = sin((uv.x * 1.3 + uv.y) * 100.) * 1.8;
-		highlight = min(1., highlight) - fract(max(0., highlight - 1.)); // fold
-		highlight = highlight > .75 ? 1. : 0.;
-		highlight *= sin((uv.x + uv.y * .12) * 60.) * .5 + .5;
-		highlight *= sin((uv.y + uv.x * .42) * 40.) * .5 + .5;
-		
-		vec3 color;
+		vec3 color = vec3(0, 0, 0);
 		switch(int(solid.r)) {
 		case 1: // ice
-			color = vec3(.1, .6, .9);
+			float highlight = sin((uv.x * 1.3 + uv.y) * 100.) * 1.8;
+			highlight = min(1., highlight) - fract(max(0., highlight - 1.)); // fold
+			highlight = highlight > .75 ? 1. : 0.;
+			highlight *= sin((uv.x + uv.y * .12) * 60.) * .5 + .5;
+			highlight *= sin((uv.y + uv.x * .42) * 40.) * .5 + .5;
+			color = vec3(.1, .6, .9) * vec3(1. + .2 * highlight);
 			break;
 		case 2: // obsidian
 			color = vec3(.35, .02, .15);
 			break;
-		case 3: // bedrock
-			color = vec3(.2, .3, .25);
-			break;
 		}
-		
-		COLOR.rgb = color * vec3(1. + .2 * highlight);
-	} else {
-		const float radius = 1.;
-		float d[2] = {1000., 1000.};
-		float sum[2] = {0., 0.};
-		
-		for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x - 1., fluid_id.x + radius); ++x) {
-			for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y - 1., fluid_id.y + radius); ++y) {
-				for (float z = 0.; z < fluid_tex_size.z; ++z) {
-					vec3 tx = (vec3(.5) + vec3(x, y, z)) / fluid_tex_size;
-					vec4 fluid = texture(fluid_tex, tx);
-					if (fluid.b == 0.)
-						break;
-					int index = int(fluid.b)-1;
-					d[index] = smin(d[index], circle(uv - fluid.xy * aspect) - .01, .07);
-					sum[index] += max(0., 1. - circle(uv - fluid.xy * aspect) * fluid_tex_size.y);
-					//d = min(d, circle(uv - fluid.xy * aspect) - .01);
-				}
-			}
-		}
-
-		if (d[0] < 0.) {
-			float depth = min(1., sum[0] * sum[0] * .01);
-			float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d[0]) * abs(sin(d[0] * 337. - elapsed_time * 1.87) + sin(d[0] * 700. + elapsed_time) * .5);
-			vec3 border_color = vec3(.5, .6, .8);
-			vec3 deep_color = vec3(.1, .2, .6) * (1.5 - depth) + wave * .5;
+		COLOR.rgb = blend(COLOR.rgb, vec4(color, 1.));
+	}
 	
-			COLOR.rgb = mix(
-					border_color,
-					deep_color,
-					clamp(0., 1., -d[0] * 100.))
-				* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[0]);
-		}
-		
-		if (d[1] < 0.) {
-			float depth = min(1., sum[1] * sum[1] * .01);
-			float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d[1]) * abs(sin(d[1] * 337. - elapsed_time * 1.87) + sin(d[1] * 700. + elapsed_time) * .5);
-			vec3 border_color = vec3(.8, .6, .5);
-			vec3 deep_color = vec3(.6, .2, .1) * (1.5 - depth) + wave * .5;
-	
-			COLOR.rgb = mix(
-					border_color,
-					deep_color,
-					clamp(0., 1., -d[1] * 100.))
-				* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[1]);
+	const float tile_radius = 1.;
+	float d = 1000.;
+	for (float x = max(0., solid_id.x - tile_radius); x <= min(solid_tex_size.x - 1., solid_id.x + tile_radius); ++x) {
+		for (float y = max(0., solid_id.y - tile_radius); y <= min(solid_tex_size.y - 1., solid_id.y + tile_radius); ++y) {
+			vec2 tx = (vec2(.5) + vec2(x, y)) / solid_tex_size;
+			bool tile = texture(solid_tex, tx).r == 3.;
+			if (tile)
+				d = smin(d, rectangle(solid_gv + solid_id - vec2(x, y), vec2(.5)), .5);
 		}
 	}
+
+	COLOR.rgb = blend(COLOR.rgb, vec4(
+		mix(
+			vec3(.4, .2, .2),
+			vec3(.2, .6, .2),
+			smoothstep(-.01, 0., d)
+		),
+		smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., d / solid_tex_size.y)));
+	
+	// noise
+	COLOR.rgb = blend(COLOR.rgb, vec4(vec3(n21(pixel_id)), .05));
 }"
 
 [sub_resource type="ShaderMaterial" id=2]
