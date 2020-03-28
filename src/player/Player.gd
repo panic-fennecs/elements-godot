@@ -108,24 +108,29 @@ func _physics_process(_delta) -> void:
 		else:
 			$AnimatedSprite.play("fall" + str(player_id))
 
+# invariant: never intersect edge which also intersects solid object
 func apply_movement():
 	var sman = $"/root/Main/Level/SolidManager"
 	var v = _velocity
 	for t in range(3):
+		if abs(v.x) < 0.4: v.x = 0
+		if abs(v.y) < 0.4: v.y = 0
 		var cast = sman.rect_raycast([position, PLAYER_SIZE], v)
 		if cast == null:
-			position += v
+			if v.length() > 0.4:
+				position += v - v.normalized() * 0.4
 			break
 		else:
 			if t == 2:
 				break # this should not happen!
+			if cast[0] < 0.01: break
 			var move_vector = cast[0] * v
 			if move_vector.length() > 0.4:
 				position += move_vector - move_vector.normalized() * 0.4
 			v -= move_vector
 			var last_direction = cast[1]
 			if last_direction.length_squared() == 0:
-				print("player glitched!")
+				assert(false)
 				#_velocity = Vector2.ZERO # player has glaitched!
 				break
 			if last_direction.x != 0:
