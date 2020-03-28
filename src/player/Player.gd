@@ -3,11 +3,11 @@ extends Node2D
 export(Color) var player_color: Color = Color.white
 export(int) var player_id: int
 
-const GRAVITY: float = 6.0
-const MOVEMENT_FORCE: float = 10.0
-const JUMP_FORCE: float = 100.0
-const DRAG: float = 3.0
-const MAX_SPEED: float = 50.0
+const GRAVITY: float = 0.3
+const MOVEMENT_FORCE: float = 3.0
+const JUMP_FORCE: float = 10.0
+const DRAG: float = 1.0
+const MAX_SPEED: float = 10.0
 const AIM_DISTANCE: float = 100.0
 const IDLE_SPEED = 20
 
@@ -89,7 +89,7 @@ func _physics_process(_delta) -> void:
 	if _velocity.x > MAX_SPEED: _velocity.x = MAX_SPEED
 	if _velocity.x < -MAX_SPEED: _velocity.x = -MAX_SPEED
 	if bottom_block():
-		_velocity.y -= 1.0 # this pushes the player up!
+		_velocity.y -= 0.1 # this pushes the player up!
 	else:
 		_velocity.y += GRAVITY
 
@@ -109,15 +109,33 @@ func _physics_process(_delta) -> void:
 			$AnimatedSprite.play("fall" + str(player_id))
 
 func apply_movement():
-	if left_block():
-		_velocity.x = max(_velocity.x, 0)
-	if right_block():
-		_velocity.x = min(_velocity.x, 0)
-	if up_block():
-		_velocity.y = max(_velocity.y, 0)
-	if bottom_block():
-		_velocity.y = min(_velocity.y, 0)
-	position += _velocity / 10
+	var sman = $"/root/Main/Level/SolidManager"
+	var v = _velocity
+	for t in range(3):
+		var cast = sman.rect_raycast([position, PLAYER_SIZE], v)
+		if cast == null:
+			position += v
+			break
+		else:
+			if t == 2:
+				break # this should not happen!
+			var move_vector = cast[0] * v
+			if abs(move_vector.x) > 0.1:
+				position.x += move_vector.x * 0.95
+			if abs(move_vector.y) > 0.1:
+				position.y += move_vector.y * 0.95
+			v -= move_vector
+			var last_direction = cast[1]
+			if last_direction.length_squared() == 0:
+				# print("player glitched!")
+				#_velocity = Vector2.ZERO # player has glaitched!
+				break
+			if last_direction.x != 0:
+				_velocity.x = 0
+				v.x = 0
+			if last_direction.y != 0:
+				_velocity.y = 0
+				v.y = 0
 
 func _process(delta) -> void:
 	$Healthbar.rect_size.x = PLAYER_SIZE.x * health / 100
