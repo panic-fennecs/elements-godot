@@ -1,14 +1,20 @@
 extends Node2D
 
+const LIFETIME = 2
+const ANCHOR_DIST = 4
+
 var bound_to_player = null
 var velocity = Vector2(0, 0)
 var type = null
+var _anchor = null
+var lifetime = LIFETIME
 
 const MAX_VELOCITY = 20
 
 func init(player, type_):
 	bound_to_player = player
 	position = player.global_position
+	_anchor = position
 	type = type_
 
 const CONTACT_FLUID_DIST = 0
@@ -22,10 +28,13 @@ func apply_contact_solid_force(f): # vector from fluid to force-src
 const CONTACT_CURSOR_DIST = 100
 func apply_contact_cursor_force(f): # vector from fluid to force-src
 	bound_to_player = null
+	lifetime = LIFETIME
+	_anchor = position
 	velocity += f.normalized()
 
 const CONTACT_BOUND_DIST = 100
 func apply_contact_bound_force(f): # vector from fluid to force-src
+	lifetime = LIFETIME
 	velocity += f.normalized()
 
 func sub_physics_process(delta):
@@ -81,6 +90,7 @@ func collides_player(player):
 			position.x <= player.position.x + PLAYER_SIZE.x/2 and \
 			position.y >= player.position.y - PLAYER_SIZE.y/2 and \
 			position.y <= player.position.y + PLAYER_SIZE.y/2
+
 func die():
 	$"/root/Main/Level/FluidManager".fluids.erase(self)
 	queue_free()
@@ -90,3 +100,15 @@ func _process(delta):
 	if collides_player(enemy):
 		enemy.health -= 10
 		die()
+		return
+	
+	if _anchor != null:
+		var v = position - _anchor
+		if v.length_squared() <= ANCHOR_DIST:
+			lifetime -= delta
+			if lifetime <= 0:
+				die()
+				return
+		else:
+			_anchor = position
+			lifetime = LIFETIME
