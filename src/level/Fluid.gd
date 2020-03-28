@@ -26,7 +26,10 @@ func apply_contact_solid_force(f): # vector from fluid to force-src
 
 const CURSOR_RADIUS = 100
 func apply_bound_force(): # vector from fluid to force-src
-	velocity += (bound_to.global_position - position).normalized() * 10
+	var t = (bound_to.global_position - position) / 7
+	var M = 10
+	if t.length() > M: t.normalized() * M
+	velocity += t
 
 func bind_to_cursor(cursor):
 	bound_to = cursor
@@ -42,7 +45,8 @@ func sub_physics_process(delta):
 
 	apply_movement()
 
-	velocity *= 0.99
+	velocity *= 1
+	if bound_to: velocity *= 0.85
 	velocity += Vector2(0, 0.2)
 
 func apply_movement():
