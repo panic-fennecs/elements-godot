@@ -19,7 +19,7 @@ var lifetime_grid = []
 
 func _ready():
 	var image = Image.new()
-	image.load("res://res/map/map01.png")
+	image.load("res://res/map/map02.png")
 	
 	image.lock()
 
