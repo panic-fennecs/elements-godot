@@ -43,7 +43,7 @@ func _process(delta):
 				l = ($"/root/Main/Level/Player1/ForceCursor".global_position - fluid.position).length()
 				solid_type = $"../SolidManager".SolidType.Obsidian
 			
-			if not fluid.bound_to_player and l < FLUID_GRID_SIZE_Y * freeze_radius:
+			if (fluid.bound_to != type_to_player(solid_type)) and l < FLUID_GRID_SIZE_Y * freeze_radius:
 				var cell_pos = fluid.position / $"/root/Main/Level".WORLD_SIZE * $"../SolidManager".SOLID_GRID_SIZE
 				cell_pos = cell_pos.floor()
 				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y, solid_type)
@@ -66,10 +66,15 @@ func _process(delta):
 func _physics_process(delta):
 	for f in fluids:
 		f.sub_physics_process(delta)
-	if Input.is_action_pressed("use_force_0"):
+	if Input.is_action_just_pressed("use_force_0"):
 		apply_cursor_pull(0)
-	if Input.is_action_pressed("use_force_1"):
+	elif Input.is_action_just_released("use_force_0"):
+		drop_cursor_pull(0)
+	if Input.is_action_just_pressed("use_force_1"):
 		apply_cursor_pull(1)
+	elif Input.is_action_just_released("use_force_1"):
+		drop_cursor_pull(1)
+	
 	apply_water_to_water_repel()
 	apply_ice_to_water_repel()
 
@@ -83,8 +88,14 @@ func apply_cursor_pull(player_id):
 	for f in fluids:
 		if type_to_player(f.type) == player:
 			var v = cursor.global_position - f.position
-			if v.length_squared() <= f.CONTACT_CURSOR_DIST*f.CONTACT_CURSOR_DIST:
-				f.apply_contact_cursor_force(v)
+			if v.length_squared() <= f.CURSOR_RADIUS*f.CURSOR_RADIUS:
+				f.bind_to_cursor(cursor)
+
+func drop_cursor_pull(player_id):
+	var cursor = get_node("/root/Main/Level/Player" + str(player_id) + "/ForceCursor")
+	for f in fluids:
+		if f.bound_to == cursor:
+			f.unbound_from_cursor()
 
 func create_grid():
 	var grid = [] 

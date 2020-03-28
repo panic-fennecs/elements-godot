@@ -3,7 +3,7 @@ extends Node2D
 const LIFETIME = 2
 const ANCHOR_DIST = 4
 
-var bound_to_player = null
+var bound_to = null # may be null / player / cursor
 var velocity = Vector2(0, 0)
 var type = null
 var _anchor = null
@@ -12,9 +12,8 @@ var lifetime = LIFETIME
 const MAX_VELOCITY = 20
 
 func init(player, type_):
-	bound_to_player = player
+	bound_to = player
 	position = player.global_position
-	_anchor = position
 	type = type_
 
 const CONTACT_FLUID_DIST = 0
@@ -25,23 +24,21 @@ const CONTACT_SOLID_DIST = 0
 func apply_contact_solid_force(f): # vector from fluid to force-src
 	pass # TODO make fluids drop down stairs
 
-const CONTACT_CURSOR_DIST = 100
-func apply_contact_cursor_force(f): # vector from fluid to force-src
-	bound_to_player = null
+const CURSOR_RADIUS = 100
+func apply_bound_force(): # vector from fluid to force-src
+	velocity += (bound_to.global_position - position).normalized() * 10
+
+func bind_to_cursor(cursor):
+	bound_to = cursor
+	_anchor = null
+
+func unbound_from_cursor():
+	bound_to = null
 	lifetime = LIFETIME
 	_anchor = position
-	velocity += f.normalized()
-
-const CONTACT_BOUND_DIST = 100
-func apply_contact_bound_force(f): # vector from fluid to force-src
-	lifetime = LIFETIME
-	velocity += f.normalized()
 
 func sub_physics_process(delta):
-	if bound_to_player:
-		var v = bound_to_player.position - position
-		if v.length_squared() > CONTACT_BOUND_DIST*CONTACT_BOUND_DIST: bound_to_player = null
-		else: apply_contact_bound_force(v)
+	if bound_to: apply_bound_force()
 
 	apply_movement()
 
