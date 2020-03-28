@@ -1,5 +1,7 @@
 extends Node2D
 
+const MAX_NUM_FLUIDS = 5
+const FLUID_COOLDOWN = 0.3
 const FLUID_GRID_SIZE_X = 16
 const FLUID_GRID_SIZE_Y = 9
 const FLUID_GRID_SIZE_Z = 16
@@ -22,10 +24,11 @@ func get_fluid(grid, pos):
 	return null
 
 func _add_fluid(player, type):
-	var fluid = p.instance()
-	fluid.init(player, type)
-	fluids.append(fluid)
-	add_child(fluid)
+	if not get_num_fluids_of_player(player) > MAX_NUM_FLUIDS:
+		var fluid = p.instance()
+		fluid.init(player, type)
+		fluids.append(fluid)
+		add_child(fluid)
 
 func _process(delta):
 	var freeze_radius = 4.0
@@ -58,8 +61,8 @@ func _process(delta):
 			i = i - 1
 				
 	counter += delta
-	while counter > 1:
-		counter -= 1
+	while counter > FLUID_COOLDOWN:
+		counter -= FLUID_COOLDOWN
 		_add_fluid($"/root/Main/Level/Player0", FluidType.Water)
 		_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
 
@@ -77,6 +80,13 @@ func _physics_process(delta):
 	
 	apply_water_to_water_repel()
 	apply_ice_to_water_repel()
+
+func get_num_fluids_of_player(player):
+	var num_fluids = 0
+	for fluid in fluids:
+		if fluid.bound_to == player:
+			num_fluids += 1
+	return num_fluids
 
 func type_to_player(type):
 	if type == FluidType.Water: return $"/root/Main/Level/Player0"

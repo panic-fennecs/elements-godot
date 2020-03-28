@@ -2,6 +2,7 @@ extends Node2D
 
 const LIFETIME = 2
 const ANCHOR_DIST = 4
+const ENEMY_DAMAGE = 5
 
 var bound_to = null # may be null / player / cursor
 var velocity = Vector2(0, 0)
@@ -109,7 +110,7 @@ func die():
 func _process(delta):
 	var enemy = get_enemy()
 	if collides_player(enemy):
-		enemy.damage(10)
+		enemy.damage(ENEMY_DAMAGE)
 		die()
 		return
 	
