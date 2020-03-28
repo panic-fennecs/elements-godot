@@ -5,6 +5,8 @@ const SOLID_GRID_SIZE_Y = 9*8
 const SOLID_GRID_SIZE = Vector2(SOLID_GRID_SIZE_X, SOLID_GRID_SIZE_Y)
 onready var SOLID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / SOLID_GRID_SIZE
 
+const LIFETIME = 6
+
 enum SolidType {
 	None,
 	Ice,
@@ -13,11 +15,13 @@ enum SolidType {
 }
 
 var solid_grid = []
+var lifetime_grid = []
 
 func _ready():
 	for x in range(SOLID_GRID_SIZE_X):
 		for y in range(SOLID_GRID_SIZE_Y):
 			solid_grid.append(SolidType.None)
+			lifetime_grid.append(null)
 	
 	for x in range(SOLID_GRID_SIZE_X):
 		for y in range(floor(SOLID_GRID_SIZE_Y * .7), floor(SOLID_GRID_SIZE_Y * .9)):
@@ -29,6 +33,10 @@ func get_cell(x, y):
 
 func set_cell(x, y, type):
 	solid_grid[x + y * SOLID_GRID_SIZE_X] = type
+	if type == SolidType.Ice or type == SolidType.Obsidian:
+		lifetime_grid[x + y * SOLID_GRID_SIZE_X] = LIFETIME
+	else:
+		lifetime_grid[x + y * SOLID_GRID_SIZE_X] = null
 
 func raycast(from, vector): # returns null or [collision-point (from + vector * alpha), colliding tile position, direction]
 	var C = 0 # 0.00000001
@@ -67,3 +75,11 @@ func raycast(from, vector): # returns null or [collision-point (from + vector * 
 		else: return null
 		vector -= change
 		from += change
+
+func _process(delta):
+	for i in range(len(lifetime_grid)):
+		if lifetime_grid[i] != null:
+			lifetime_grid[i] -= delta
+			if lifetime_grid[i] <= 0:
+				lifetime_grid[i] = null
+				solid_grid[i] = SolidType.None
