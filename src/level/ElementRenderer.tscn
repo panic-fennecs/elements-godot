@@ -52,7 +52,7 @@ void fragment() {
 			break;
 		}
 		
-		COLOR.rgb += color * vec3(1. + .2 * highlight);
+		COLOR.rgb = color * vec3(1. + .2 * highlight);
 	} else {
 		const float radius = 1.;
 		float d[2] = {1000., 1000.};
@@ -66,31 +66,38 @@ void fragment() {
 					if (fluid.b == 0.)
 						break;
 					int index = int(fluid.b)-1;
-					d[index] = smin(d[index], circle(uv - fluid.xy * aspect) - .025, .025);
+					d[index] = smin(d[index], circle(uv - fluid.xy * aspect) - .01, .07);
 					sum[index] += max(0., 1. - circle(uv - fluid.xy * aspect) * fluid_tex_size.y);
 					//d = min(d, circle(uv - fluid.xy * aspect) - .01);
 				}
 			}
 		}
 
-		float depth = sum[0] * sum[0] * .02;
-		float wave = smoothstep(.02, .001, -d[0]) * abs(sin(d[0] * 400. - elapsed_time * 1.87) + sin(d[0] * 700. + elapsed_time) * .5);
-		vec3 border_color = vec3(.5, .6, .73);
-		vec3 deep_color = vec3(.1, .2, .6) * (1. + depth * .5) + wave * .4;
-
-		COLOR.rgb += mix(
-				border_color,
-				deep_color,
-				clamp(0., 1., -d[0] * 100.))
-			* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[0]);
-			
-		border_color = vec3(.4, .3, .3) * .7;
-		deep_color = vec3(.5, .1, .06);
-		COLOR.rgb += mix(
-				border_color,
-				deep_color,
-				clamp(0., 1., -d[1] * 100.))
-			* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[1]);
+		if (d[0] < 0.) {
+			float depth = min(1., sum[0] * sum[0] * .01);
+			float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d[0]) * abs(sin(d[0] * 337. - elapsed_time * 1.87) + sin(d[0] * 700. + elapsed_time) * .5);
+			vec3 border_color = vec3(.5, .6, .8);
+			vec3 deep_color = vec3(.1, .2, .6) * (1.5 - depth) + wave * .5;
+	
+			COLOR.rgb = mix(
+					border_color,
+					deep_color,
+					clamp(0., 1., -d[0] * 100.))
+				* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[0]);
+		}
+		
+		if (d[1] < 0.) {
+			float depth = min(1., sum[1] * sum[1] * .01);
+			float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d[1]) * abs(sin(d[1] * 337. - elapsed_time * 1.87) + sin(d[1] * 700. + elapsed_time) * .5);
+			vec3 border_color = vec3(.8, .6, .5);
+			vec3 deep_color = vec3(.6, .2, .1) * (1.5 - depth) + wave * .5;
+	
+			COLOR.rgb = mix(
+					border_color,
+					deep_color,
+					clamp(0., 1., -d[1] * 100.))
+				* smoothstep(SCREEN_PIXEL_SIZE.y, .0, d[1]);
+		}
 	}
 }"
 

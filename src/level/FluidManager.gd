@@ -1,8 +1,8 @@
 extends Node2D
 
-const FLUID_GRID_SIZE_X = 16*2
-const FLUID_GRID_SIZE_Y = 9*2
-const FLUID_GRID_SIZE_Z = 16/2
+const FLUID_GRID_SIZE_X = 16
+const FLUID_GRID_SIZE_Y = 9
+const FLUID_GRID_SIZE_Z = 16
 const FLUID_GRID_SIZE = Vector2(FLUID_GRID_SIZE_X, FLUID_GRID_SIZE_Y)
 onready var FLUID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / FLUID_GRID_SIZE
 
