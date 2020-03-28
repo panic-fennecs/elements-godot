@@ -12,7 +12,8 @@ const AIM_DISTANCE: float = 100.0
 const IDLE_SPEED = 20
 
 const PLAYER_SIZE = Vector2(27, 54)
-const SENSOR_DEPTH = 1
+const SENSOR_DEPTH = 3
+const GROUNDED_SENSOR_DEPTH = 10
 
 var _velocity: Vector2 = Vector2.ZERO
 var health = 100
@@ -26,24 +27,26 @@ func _ready():
 func lt(): return position - PLAYER_SIZE / 2
 
 # sensor = [left-top, size]-rect in world coordinates
+# the sensors are are within the player
+# the sensors do not overlap and the four corners of the player have no sensors
 func left_block():
-	var s = [lt() - Vector2(SENSOR_DEPTH, 0), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
+	var s = [lt() + Vector2(0, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
 	return check_sensor(s)
 
 func right_block():
-	var s = [lt() + Vector2(PLAYER_SIZE.x, 0), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
+	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
 	return check_sensor(s)
 
 func up_block():
-	var s = [lt(), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
-	return check_sensor(s)
-
-func grounded_block():
-	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH+3)]
+	var s = [lt() + Vector2(SENSOR_DEPTH, 0), Vector2(PLAYER_SIZE.x - 2*SENSOR_DEPTH, SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func bottom_block():
-	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, SENSOR_DEPTH)]
+	var s = [lt() + Vector2(SENSOR_DEPTH, PLAYER_SIZE.y - SENSOR_DEPTH), Vector2(PLAYER_SIZE.x - 2*SENSOR_DEPTH, SENSOR_DEPTH)]
+	return check_sensor(s)
+	
+func grounded_block():
+	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func check_sensor(sensor):
@@ -75,7 +78,7 @@ func _physics_process(_delta) -> void:
 		_velocity.x += MOVEMENT_FORCE
 		$AnimatedSprite.flip_h = false
 	if Input.is_action_just_pressed("jump_" + str(player_id)) and is_on_floor():
-		_velocity.y -= JUMP_FORCE
+		_velocity.y = -JUMP_FORCE
 	if Input.is_action_just_pressed("use_force_" + str(player_id)):
 		# todo
 		pass
