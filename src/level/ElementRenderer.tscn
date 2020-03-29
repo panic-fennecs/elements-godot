@@ -42,6 +42,23 @@ float n21(vec2 co) {
     return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
 }
 
+float bedrock(vec2 sv) {
+	const float tile_radius = 1.;
+	vec2 solid_tex_size = vec2(textureSize(solid_tex, 0).xy);
+	vec2 solid_id = floor(sv * solid_tex_size);
+	vec2 solid_gv = fract(sv * solid_tex_size) - .5;
+	float d = 1000.;
+	for (float x = max(0., solid_id.x - tile_radius); x <= min(solid_tex_size.x - 1., solid_id.x + tile_radius); ++x) {
+		for (float y = max(0., solid_id.y - tile_radius); y <= min(solid_tex_size.y - 1., solid_id.y + tile_radius); ++y) {
+			vec2 tx = (vec2(.5) + vec2(x, y)) / solid_tex_size;
+			bool tile = texture(solid_tex, tx).r == 3.;
+			if (tile)
+				d = smin(d, rectangle(solid_gv + solid_id - vec2(x, y), vec2(.5)), .5);
+		}
+	}
+	return d;
+}
+
 void fragment() {
 	float aspect_ratio = 16. / 9.;
 	vec2 aspect = vec2(aspect_ratio, 1);
@@ -55,8 +72,12 @@ void fragment() {
 	vec2 solid_id = floor(sv * solid_tex_size);
 	vec2 solid_gv = fract(sv * solid_tex_size) - .5;
 	vec2 fluid_id = floor(sv * fluid_tex_size.xy);
-	COLOR = vec4(.09, .17, .22, 1);
+	COLOR = vec4(vec3(.44, .77, .92) * .3, 1);
 	//COLOR = vec4(fluid_id.xy / fluid_tex_size.xy, .22, 1);
+	
+	// solid shadow
+	float dshadow = bedrock(sv - vec2(1, 1.4) / solid_tex_size);
+	COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.05), dshadow < 0. ? .6 : 0.));
 	
 	// fluids
 
@@ -126,21 +147,12 @@ void fragment() {
 		COLOR.rgb = blend(COLOR.rgb, vec4(color, 1.));
 	}
 	
-	const float tile_radius = 1.;
-	float d = 1000.;
-	for (float x = max(0., solid_id.x - tile_radius); x <= min(solid_tex_size.x - 1., solid_id.x + tile_radius); ++x) {
-		for (float y = max(0., solid_id.y - tile_radius); y <= min(solid_tex_size.y - 1., solid_id.y + tile_radius); ++y) {
-			vec2 tx = (vec2(.5) + vec2(x, y)) / solid_tex_size;
-			bool tile = texture(solid_tex, tx).r == 3.;
-			if (tile)
-				d = smin(d, rectangle(solid_gv + solid_id - vec2(x, y), vec2(.5)), .5);
-		}
-	}
+	float d = bedrock(sv);
 
 	COLOR.rgb = blend(COLOR.rgb, vec4(
 		mix(
-			vec3(.4, .2, .2),
-			vec3(.2, .6, .2),
+			vec3(.2, .1, .1),
+			vec3(.25, .4, .2),
 			smoothstep(-.01, 0., d)
 		),
 		smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., d / solid_tex_size.y)));
