@@ -105,8 +105,8 @@ func die():
 	queue_free()
 
 # returns bool
-func death_chance():
-	return randi() % 300 < 2
+func death_chance(delta):
+	return randf() < delta * 0.02
 	# return age > (randi() % 10) + 5
 
 func _process(delta):
@@ -117,5 +117,5 @@ func _process(delta):
 		die()
 		return
 	age += delta
-	if death_chance():
+	if death_chance(delta):
 		die()
