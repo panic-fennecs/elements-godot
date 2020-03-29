@@ -23,12 +23,11 @@ func get_fluid(grid, pos):
 		return fluid_cell[pos.z]
 	return null
 
-func _add_fluid(player, type):
-	if not get_num_fluids_of_player(player) > MAX_NUM_FLUIDS:
-		var fluid = p.instance()
-		fluid.init(player, type)
-		fluids.append(fluid)
-		add_child(fluid)
+func _add_fluid(cursor, type):
+	var fluid = p.instance()
+	add_child(fluid)
+	fluid.init(cursor, type)
+	fluids.append(fluid)
 
 func _process(delta):
 	var freeze_radius = 4.0
@@ -64,8 +63,8 @@ func _process(delta):
 	counter += delta
 	while counter > FLUID_COOLDOWN:
 		counter -= FLUID_COOLDOWN
-		_add_fluid($"/root/Main/Level/Player0", FluidType.Water)
-		_add_fluid($"/root/Main/Level/Player1", FluidType.Lava)
+		_add_fluid($"/root/Main/Level/Player0/ForceCursor", FluidType.Water)
+		_add_fluid($"/root/Main/Level/Player1/ForceCursor", FluidType.Lava)
 
 func _physics_process(delta):
 	for f in fluids:
@@ -81,13 +80,6 @@ func _physics_process(delta):
 	
 	apply_water_to_water_repel()
 	apply_ice_to_water_repel()
-
-func get_num_fluids_of_player(player):
-	var num_fluids = 0
-	for fluid in fluids:
-		if fluid.bound_to == player:
-			num_fluids += 1
-	return num_fluids
 
 func fluid_type_to_player(type):
 	if type == FluidType.Water: return $"/root/Main/Level/Player0"

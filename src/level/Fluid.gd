@@ -1,20 +1,20 @@
 extends Node2D
 
-const LIFETIME = 2
-const ANCHOR_DIST = 30
 const ENEMY_DAMAGE = 5
 
 var bound_to = null # may be null / player / cursor
 var velocity = Vector2(0, 0)
 var type = null
-var _anchor = null
-var lifetime = LIFETIME
+var age = 0
 
 const MAX_VELOCITY = 20
 
-func init(player, type_):
-	bound_to = player
-	position = player.global_position + Vector2(randf()*0.001, randf()*0.001)
+func init(cursor, type_):
+	var fman = $"/root/Main/Level/FluidManager"
+	var player_id = fman.fluid_type_to_player(type_).player_id
+	if Input.is_action_pressed("use_force_" + str(player_id)):
+		bound_to = cursor
+	position = cursor.global_position + Vector2(randf()*0.001, randf()*0.001)
 	type = type_
 
 const CONTACT_FLUID_DIST = 30
@@ -37,12 +37,9 @@ func apply_bound_force(): # vector from fluid to force-src
 
 func bind_to_cursor(cursor):
 	bound_to = cursor
-	_anchor = null
 
 func unbound_from_cursor():
 	bound_to = null
-	lifetime = LIFETIME
-	_anchor = position
 
 func sub_physics_process(delta):
 	if bound_to: apply_bound_force()
@@ -107,6 +104,11 @@ func die():
 	$"/root/Main/Level/FluidManager".fluids.erase(self)
 	queue_free()
 
+# returns bool
+func death_chance():
+	return randi() % 300 < 2
+	# return age > (randi() % 10) + 5
+
 func _process(delta):
 	if !is_instance_valid(self): return
 	var enemy = get_enemy()
@@ -114,14 +116,6 @@ func _process(delta):
 		enemy.damage(ENEMY_DAMAGE)
 		die()
 		return
-	
-	if _anchor != null:
-		var v = position - _anchor
-		if v.length_squared() <= ANCHOR_DIST:
-			lifetime -= delta
-			if lifetime <= 0:
-				die()
-				return
-		else:
-			_anchor = position
-			lifetime = LIFETIME
+	age += delta
+	if death_chance():
+		die()
