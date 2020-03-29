@@ -135,6 +135,9 @@ func reset_freeze_skill():
 	free_solids = 0
 	last_solid_place_world_pos = null
 
+func get_vec_sum(vec):
+	return vec.x + vec.y + vec.z
+
 func _physics_process(_delta) -> void:
 	if _velocity.x > 0: _velocity.x = max(0, _velocity.x - DRAG)
 	if _velocity.x < 0: _velocity.x = min(0, _velocity.x + DRAG)
@@ -148,13 +151,8 @@ func _physics_process(_delta) -> void:
 	if Input.is_action_just_pressed("jump_" + str(player_id)) and is_on_floor():
 		_velocity.y = -JUMP_FORCE
 	if Input.is_action_just_pressed("drop_few_" + str(player_id)):
-		var c = 0
-		var fman = $"/root/Main/Level/FluidManager"
-		for f in fman.fluids:
-			if fman.fluid_type_to_player(f.type) == self and f.bound_to:
-				f.bound_to = null
-				c += 1
-				if c == 3: break
+		self._drop_some()
+
 	if Input.is_action_pressed("freeze_" + str(player_id)):
 		do_freeze_skill()
 	else:
@@ -179,6 +177,56 @@ func _physics_process(_delta) -> void:
 			$AnimatedSprite.play("fallslow" + str(player_id))
 		else:
 			$AnimatedSprite.play("fall" + str(player_id))
+
+class FluidSorter:
+	var root_pos
+	func _init(root_pos):
+		self.root_pos = root_pos
+
+	func sort_fluids(f1, f2):
+		return (f1.position - self.root_pos).length_squared() < (f2.position - self.root_pos).length_squared()
+
+const NUM_DROP_SOME = 3
+func _drop_some():
+	var fman = $"/root/Main/Level/FluidManager"
+	var sum_speed = Vector2.ZERO
+	var avg_position = Vector2.ZERO
+	var own_fluids = []
+	for f in fman.fluids:
+		if fman.fluid_type_to_player(f.type) == self and f.bound_to:
+			own_fluids.append(f)
+			sum_speed += f.velocity
+			avg_position += f.position
+
+	avg_position /= len(own_fluids)
+
+	var best_fluid = null
+	var best_value = null
+	for own_fluid in own_fluids:
+		var value = (own_fluid.position - avg_position).dot(sum_speed)
+		if best_value == null or value > best_value:
+			best_value = value
+			best_fluid = own_fluid
+	if own_fluids.empty():
+		return
+	own_fluids.erase(best_fluid)
+	own_fluids.sort_custom(FluidSorter.new(best_fluid.position), "sort_fluids")
+
+	best_fluid.bound_to = null
+	best_fluid.position += best_fluid.velocity * 3
+
+	var chosen_fluids = [best_fluid]
+
+	for i in range(min(NUM_DROP_SOME - 1, len(own_fluids))):
+		chosen_fluids.append(own_fluids[i])
+
+	for f in chosen_fluids:
+		f.bound_to = null
+		f.velocity = best_fluid.velocity
+		f.position = best_fluid.position + (f.position - best_fluid.position).normalized() * 15
+
+	if len(chosen_fluids) == 3:
+		chosen_fluids[1].position = chosen_fluids[2].position + (chosen_fluids[1].position - chosen_fluids[2].position).normalized() * 15
 
 func apply_movement():
 	var n = _velocity.length()
