@@ -1,7 +1,7 @@
 extends Node2D
 
 const MAX_NUM_FLUIDS = 5
-const FLUID_COOLDOWN = 0.65
+const FLUID_COOLDOWN = 0.5
 const FLUID_GRID_SIZE_X = 16
 const FLUID_GRID_SIZE_Y = 9
 const FLUID_GRID_SIZE_Z = 16
