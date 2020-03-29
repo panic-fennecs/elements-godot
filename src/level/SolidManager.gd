@@ -5,7 +5,7 @@ const SOLID_GRID_SIZE_Y = 9*8
 const SOLID_GRID_SIZE = Vector2(SOLID_GRID_SIZE_X, SOLID_GRID_SIZE_Y)
 onready var SOLID_CELL_SIZE = $"/root/Main/Level".WORLD_SIZE / SOLID_GRID_SIZE
 
-const LIFETIME = 6
+const LIFETIME = 0.75
 
 enum SolidType {
 	None,
