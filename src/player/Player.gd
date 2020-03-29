@@ -31,7 +31,7 @@ func lt(): return position - PLAYER_SIZE / 2
 # the sensors are are within the player
 # the sensors do not overlap and the four corners of the player have no sensors
 func left_block():
-	var s = [lt() + Vector2(0, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y / 2)]
+	var s = [lt() + Vector2(0, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 0.4)]
 	return check_sensor(s)
 
 func left_step_block():
@@ -39,7 +39,7 @@ func left_step_block():
 	return check_sensor(s)
 
 func right_block():
-	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y / 2)]
+	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 0.4)]
 	return check_sensor(s)
 
 func right_step_block():
