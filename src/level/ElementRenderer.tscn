@@ -43,20 +43,63 @@ float n21(vec2 co) {
 }
 
 float bedrock(vec2 sv) {
-	const float tile_radius = 1.;
-	vec2 solid_tex_size = vec2(textureSize(solid_tex, 0).xy);
-	vec2 solid_id = floor(sv * solid_tex_size);
-	vec2 solid_gv = fract(sv * solid_tex_size) - .5;
+	const float r = 2.;
+	vec2 size = vec2(textureSize(solid_tex, 0).xy);
+	vec2 id = floor(sv * size);
+	vec2 gv = fract(sv * size) - .5;
 	float d = 1000.;
-	for (float x = max(0., solid_id.x - tile_radius); x <= min(solid_tex_size.x - 1., solid_id.x + tile_radius); ++x) {
-		for (float y = max(0., solid_id.y - tile_radius); y <= min(solid_tex_size.y - 1., solid_id.y + tile_radius); ++y) {
-			vec2 tx = (vec2(.5) + vec2(x, y)) / solid_tex_size;
-			bool tile = texture(solid_tex, tx).r == 3.;
-			if (tile)
-				d = smin(d, rectangle(solid_gv + solid_id - vec2(x, y), vec2(.5)), .5);
+	vec2 uv = gv;
+	
+	for (float x = max(0., id.x - r); x <= min(size.x - 1., id.x + r); ++x) {
+		for (float y = max(0., id.y - r); y <= min(size.y - 1., id.y + r); ++y) {
+			if (vec2(x, y) == id)
+				continue;
+				
+			vec2 tx = (vec2(.5) + vec2(x, y)) / size;
+			bool solid = texture(solid_tex, tx).r == 3.;
+			if (solid) {
+				vec2 v = vec2(x, y) - id + gv;
+				uv += .1 * v / r;
+			}
 		}
 	}
-	return d;
+	
+	for (float x = max(0., id.x - r); x <= min(size.x - 1., id.x + r); ++x) {
+		for (float y = max(0., id.y - r); y <= min(size.y - 1., id.y + r); ++y) {
+			vec2 tx = (vec2(.5) + vec2(x, y)) / size + uv - id;
+			bool solid = texture(solid_tex, tx).r == 3.;
+			if (solid) {
+				d = min(d, rectangle(uv, vec2(.5)));
+			}
+		}
+	}
+	//return d / size.y;
+	return texture(solid_tex, sv).r == 3. ? rectangle(uv, vec2(1.)) / size.x : 1000.;
+}
+
+float bedrock_deco(vec2 sv) {
+	const float r = 2.;
+	vec2 size = vec2(textureSize(solid_tex, 0).xy);
+	vec2 id = floor(sv * size);
+	vec2 gv = fract(sv * size) - .5;
+	float d = 1000.;
+	vec2 uv = gv;
+	
+	for (float x = max(0., id.x - r); x <= min(size.x - 1., id.x + r); ++x) {
+		for (float y = max(0., id.y - r); y <= min(size.y - 1., id.y + r); ++y) {
+			if (vec2(x, y) == id)
+				continue;
+				
+			vec2 tx = (vec2(.5) + vec2(x, y)) / size;
+			bool solid = texture(solid_tex, tx).r == 3.;
+			if (solid) {
+				vec2 v = vec2(x, y) - id + gv;
+				uv += v * .1;
+			}
+		}
+	}
+	
+	return texture(solid_tex, sv).r == 3. ? 0. : (rectangle(uv, vec2(.5)) > 0. ? 0. : 1.);
 }
 
 void fragment() {
@@ -129,7 +172,6 @@ void fragment() {
 
 	vec4 solid = texture(solid_tex, sv);
 	if (solid.r > 0.) {
-		vec3 color = vec3(0, 0, 0);
 		switch(int(solid.r)) {
 		case 1: // ice
 			float highlight = sin((uv.x * 1.3 + uv.y) * 100.) * 1.8;
@@ -137,24 +179,27 @@ void fragment() {
 			highlight = highlight > .75 ? 1. : 0.;
 			highlight *= sin((uv.x + uv.y * .12) * 60.) * .5 + .5;
 			highlight *= sin((uv.y + uv.x * .42) * 40.) * .5 + .5;
-			color = vec3(.1, .6, .9) * vec3(1. + .2 * highlight);
+			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.1, .6, .9) * vec3(1. + .2 * highlight), 1.));
 			break;
 		case 2: // obsidian
-			color = vec3(.35, .02, .15);
+			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.35, .02, .15), 1.));
 			break;
 		}
-		COLOR.rgb = blend(COLOR.rgb, vec4(color, 1.));
+		
 	}
 	
-	float dbedrock = bedrock(sv);
+	/*
+	float dbedrock = bedrock_deco(sv);
 	COLOR.rgb = blend(COLOR.rgb, vec4(
-		mix(
-			vec3(.2, .1, .1),
-			vec3(.25, .4, .2),
-			smoothstep(-.01, 0., dbedrock)
-		),
-		smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., dbedrock / solid_tex_size.y)
-		* (.8 + .2 * n21(floor(uv * 73.) / 73.))
+		2. * vec3(.2, .1, .1),
+		smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., dbedrock)
+	));*/
+	
+	float dbedrock_deco = bedrock(sv);
+	float rough_noise = .8 + .2 * n21(floor(uv * 73.) / 73.);
+	COLOR.rgb = blend(COLOR.rgb, vec4(
+		rough_noise * vec3(.2, .1, .1),
+		smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., dbedrock_deco)
 	));
 	
 	// noise
