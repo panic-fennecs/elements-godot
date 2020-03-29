@@ -30,36 +30,6 @@ func _add_fluid(cursor, type):
 	fluids.append(fluid)
 
 func _process(delta):
-	var freeze_radius = 4.0
-	
-	if Input.is_action_pressed("freeze_0") or Input.is_action_pressed("freeze_1"):
-		var i = len(fluids) - 1
-		while i >= 0:
-			var fluid = fluids[i]
-			var l = 10000.0
-			var solid_type
-			if Input.is_action_pressed("freeze_0") and fluid.type == FluidType.Water:
-				l = ($"/root/Main/Level/Player0/ForceCursor".global_position - fluid.position).length()
-				solid_type = $"../SolidManager".SolidType.Ice
-			elif Input.is_action_pressed("freeze_1") and fluid.type == FluidType.Lava:
-				l = ($"/root/Main/Level/Player1/ForceCursor".global_position - fluid.position).length()
-				solid_type = $"../SolidManager".SolidType.Obsidian
-			
-			if (fluid.bound_to != solid_type_to_player(solid_type)) and l < FLUID_GRID_SIZE_Y * freeze_radius:
-				var cell_pos = fluid.position / $"/root/Main/Level".WORLD_SIZE * $"../SolidManager".SOLID_GRID_SIZE
-				cell_pos = cell_pos.floor()
-				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y, solid_type)
-				$"../SolidManager".set_cell(cell_pos.x - 1, cell_pos.y, solid_type)
-				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y, solid_type)
-				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y - 1, solid_type)
-				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y + 1, solid_type)
-				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y - 1, solid_type)
-				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y + 1, solid_type)
-				$"../SolidManager".set_cell(cell_pos.x + 2, cell_pos.y, solid_type)
-				fluid.die()
-				break
-			i = i - 1
-	
 	counter += delta
 	while counter > FLUID_COOLDOWN:
 		counter -= FLUID_COOLDOWN

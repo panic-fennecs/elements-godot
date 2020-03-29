@@ -83,6 +83,12 @@ func check_sensor(sensor):
 func is_on_floor():
 	return grounded_block()
 
+func get_bound_fluid():
+	var fman = $"/root/Main/Level/FluidManager"
+	for f in fman.fluids:
+		if fman.fluid_type_to_player(f.type) == self and f.bound_to:
+			return f
+
 func _physics_process(_delta) -> void:
 	if _velocity.x > 0: _velocity.x = max(0, _velocity.x - DRAG)
 	if _velocity.x < 0: _velocity.x = min(0, _velocity.x + DRAG)
@@ -103,6 +109,24 @@ func _physics_process(_delta) -> void:
 				f.bound_to = null
 				c += 1
 				if c == 3: break
+	if Input.is_action_pressed("freeze_" + str(player_id)):
+		var sman = $"/root/Main/Level/SolidManager"
+		var f = get_bound_fluid()
+		var p = $ForceCursor.global_position / sman.SOLID_CELL_SIZE
+		var x = int(p.x); var y = int(p.y)
+		var nope = false
+		if f and sman.get_cell(x, y) == sman.SolidType.None:
+			for player in [$"/root/Main/Level/Player0", $"/root/Main/Level/Player1"]:
+				if player.collides_point(Vector2(x, y) * sman.SOLID_CELL_SIZE) or \
+		 			player.collides_point(Vector2(x + 1, y) * sman.SOLID_CELL_SIZE) or \
+		 			player.collides_point(Vector2(x, y + 1) * sman.SOLID_CELL_SIZE) or \
+		 			player.collides_point(Vector2(x + 1, y + 1) * sman.SOLID_CELL_SIZE):
+					nope = true
+					break
+			if !nope:
+				f.die()
+				sman.set_cell(x, y, [sman.SolidType.Ice, sman.SolidType.Obsidian][player_id])
+			
 	
 	if _velocity.x > MAX_SPEED: _velocity.x = MAX_SPEED
 	if _velocity.x < -MAX_SPEED: _velocity.x = -MAX_SPEED
