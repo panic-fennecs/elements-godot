@@ -106,8 +106,7 @@ func die():
 
 # returns bool
 func death_chance(delta):
-	return randf() < delta * 0.02
-	# return age > (randi() % 10) + 5
+	return randf() < delta * 0.025
 
 func _process(delta):
 	if !is_instance_valid(self): return
