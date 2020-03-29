@@ -124,4 +124,4 @@ func _process(delta):
 # returns damage number
 # distance between damaging fluid and its owner
 func calc_damage(distance):
-	return distance / 1000 * 9 + 1 
+	return (distance / 1000 * 9 + 1) * 2
