@@ -65,59 +65,11 @@ void fragment() {
 	// solid shadow
 	//float dshadow = bedrock(sv - vec2(1, 1.4) / solid_tex_size);
 	//COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.05), dshadow < 0. ? .6 : 0.));
-	
-	// fluids
-
-	const float radius = 1.;
-	float d2[2] = {1000., 1000.};
-	float sum[2] = {0., 0.};
-	
-	for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x - 1., fluid_id.x + radius); ++x) {
-		for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y - 1., fluid_id.y + radius); ++y) {
-			for (float z = 0.; z < fluid_tex_size.z; ++z) {
-				vec3 tx = (vec3(.5) + vec3(x, y, z)) / fluid_tex_size;
-				vec4 fluid = texture(fluid_tex, tx);
-				if (fluid.b == 0.)
-					break;
-				int index = int(fluid.b)-1;
-				d2[index] = smin(d2[index], circle(uv - fluid.xy * aspect) - .01, .05);
-				sum[index] += max(0., 1. - circle(uv - fluid.xy * aspect) * fluid_tex_size.y);
-				//d = min(d, circle(uv - fluid.xy * aspect) - .01);
-			}
-		}
-	}
-
-	float t = sin((sv.y + sv.x * -.8) * 50.) + elapsed_time;
-	float depth = min(1., sum[0] * sum[0] * .01);
-	float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[0]) * abs(sin(d2[0] * 337. - t * 1.87) * .5 + sin(d2[0] * 700. + t) * .5);
-	vec3 border_color = vec3(.5, .6, .8);
-	vec3 deep_color = vec3(.1, .2, .6) * (1.5 - depth) + wave * .5;
-
-	COLOR.rgb = blend(COLOR.rgb, vec4(
-		mix(
-			border_color,
-			deep_color,
-			clamp(0., 1., -d2[0] * 100.)
-		),
-		smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[0])));
-
-	depth = min(1., sum[1] * sum[1] * .01);
-	wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[1]) * abs(sin(d2[1] * 337. - t * 1.87) + sin(d2[1] * 700. + t) * .5);
-	border_color = vec3(.8, .6, .5) * .2;
-	deep_color = vec3(.6, .2, .1) * (1.5 - depth) - wave * .5;
-
-	COLOR.rgb = blend(COLOR.rgb, vec4(
-		mix(
-			border_color,
-			deep_color,
-			clamp(0., 1., -d2[1] * 100.)
-		),
-		smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[1])));
-
-	// solids
 
 	vec4 solid = texture(solid_tex, sv);
 	if (solid.r > 0.) {
+		// solids
+		
 		switch(int(solid.r)) {
 		case 1: // ice
 			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.1, .6, .9), 1.));
@@ -134,6 +86,54 @@ void fragment() {
 			));
 			break;
 		}
+	} else {
+		// fluids
+
+		const float radius = 1.;
+		float d2[2] = {1000., 1000.};
+		float sum[2] = {0., 0.};
+		
+		for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x - 1., fluid_id.x + radius); ++x) {
+			for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y - 1., fluid_id.y + radius); ++y) {
+				for (float z = 0.; z < fluid_tex_size.z; ++z) {
+					vec3 tx = (vec3(.5) + vec3(x, y, z)) / fluid_tex_size;
+					vec4 fluid = texture(fluid_tex, tx);
+					if (fluid.b == 0.)
+						break;
+					int index = int(fluid.b)-1;
+					d2[index] = smin(d2[index], circle(uv - fluid.xy * aspect) - .01, .05);
+					sum[index] += max(0., 1. - circle(uv - fluid.xy * aspect) * fluid_tex_size.y);
+					//d = min(d, circle(uv - fluid.xy * aspect) - .01);
+				}
+			}
+		}
+	
+		float t = sin((sv.y + sv.x * -.8) * 50.) + elapsed_time;
+		float depth = min(1., sum[0] * sum[0] * .01);
+		float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[0]) * abs(sin(d2[0] * 337. - t * 1.87) * .5 + sin(d2[0] * 700. + t) * .5);
+		vec3 border_color = vec3(.5, .6, .8);
+		vec3 deep_color = vec3(.1, .2, .6) * (1.5 - depth) + wave * .5;
+	
+		COLOR.rgb = blend(COLOR.rgb, vec4(
+			mix(
+				border_color,
+				deep_color,
+				clamp(0., 1., -d2[0] * 100.)
+			),
+			smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[0])));
+	
+		depth = min(1., sum[1] * sum[1] * .01);
+		wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[1]) * abs(sin(d2[1] * 337. - t * 1.87) + sin(d2[1] * 700. + t) * .5);
+		border_color = vec3(.8, .6, .5) * .2;
+		deep_color = vec3(.6, .2, .1) * (1.5 - depth) - wave * .5;
+	
+		COLOR.rgb = blend(COLOR.rgb, vec4(
+			mix(
+				border_color,
+				deep_color,
+				clamp(0., 1., -d2[1] * 100.)
+			),
+			smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[1])));
 	}
 	
 	// noise
