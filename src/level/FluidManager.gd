@@ -59,7 +59,7 @@ func _process(delta):
 				fluid.die()
 				break
 			i = i - 1
-				
+	
 	counter += delta
 	while counter > FLUID_COOLDOWN:
 		counter -= FLUID_COOLDOWN

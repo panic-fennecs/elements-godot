@@ -95,12 +95,14 @@ func _physics_process(_delta) -> void:
 		$AnimatedSprite.flip_h = false
 	if Input.is_action_just_pressed("jump_" + str(player_id)) and is_on_floor():
 		_velocity.y = -JUMP_FORCE
-	if Input.is_action_just_pressed("use_force_" + str(player_id)):
-		# todo
-		pass
-	if Input.is_action_just_pressed("freeze_" + str(player_id)):
-		# todo
-		pass
+	if Input.is_action_just_pressed("drop_few_" + str(player_id)):
+		var c = 0
+		var fman = $"/root/Main/Level/FluidManager"
+		for f in fman.fluids:
+			if fman.fluid_type_to_player(f.type) == self and f.bound_to:
+				f.bound_to = null
+				c += 1
+				if c == 3: break
 	
 	if _velocity.x > MAX_SPEED: _velocity.x = MAX_SPEED
 	if _velocity.x < -MAX_SPEED: _velocity.x = -MAX_SPEED
