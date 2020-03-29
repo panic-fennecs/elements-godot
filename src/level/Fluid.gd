@@ -12,7 +12,7 @@ const MAX_VELOCITY = 20
 func init(cursor, type_):
 	var fman = $"/root/Main/Level/FluidManager"
 	var player_id = fman.fluid_type_to_player(type_).player_id
-	if Input.is_action_pressed("use_force_" + str(player_id)):
+	if !Input.is_action_pressed("use_force_" + str(player_id)):
 		bound_to = cursor
 	position = cursor.global_position + Vector2(randf()*0.001, randf()*0.001)
 	type = type_
