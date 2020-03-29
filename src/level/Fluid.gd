@@ -12,7 +12,7 @@ const MAX_VELOCITY = 20
 func init(cursor, type_):
 	var fman = $"/root/Main/Level/FluidManager"
 	var player_id = fman.fluid_type_to_player(type_).player_id
-	if Input.is_action_pressed("use_force_" + str(player_id)):
+	if !Input.is_action_pressed("use_force_" + str(player_id)):
 		bound_to = cursor
 	position = cursor.global_position + Vector2(randf()*0.001, randf()*0.001)
 	type = type_
@@ -105,9 +105,11 @@ func die():
 	queue_free()
 
 # returns bool
-func death_chance():
-	return randi() % 300 < 2
-	# return age > (randi() % 10) + 5
+func death_chance(delta):
+	var die_chance = delta * 0.05 * (1 + age / 2)
+	if bound_to:
+		die_chance *= 0.08
+	return randf() < die_chance
 
 func _process(delta):
 	if !is_instance_valid(self): return
@@ -117,5 +119,5 @@ func _process(delta):
 		die()
 		return
 	age += delta
-	if death_chance():
+	if death_chance(delta):
 		die()
