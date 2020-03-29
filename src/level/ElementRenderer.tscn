@@ -38,8 +38,12 @@ vec3 blend(vec3 prev, vec4 next)
 	return mix(prev, next.xyz, next.a);
 }
 
-float n21(vec2 co) {
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+float n21(vec2 p) {
+    return fract(sin(dot(p ,vec2(12.9898,78.233))) * 43758.5453);
+}
+
+vec2 n22(vec2 p) {
+    return vec2(n21(p), n21(p + .93659));
 }
 
 float bedrock(vec2 sv) {
@@ -76,7 +80,24 @@ void fragment() {
 			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.1, .6, .9), 1.));
 			break;
 		case 2: // obsidian
-			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.35, .02, .15), 1.));
+			const float radius = 1.;
+			float d = 1000.;
+			vec2 i;
+			vec2 n;
+			for (float x = 0.; x < 2.; ++x) {
+				for (float y = 0.; y < 2.; ++y) {
+					vec2 xy = vec2(x, y) - .5;
+					vec2 id = solid_id + xy;
+					vec2 o = n22(id) - .5;
+					float cd = circle(solid_gv - xy - o);
+					if (cd < d) {
+						n = o + .5;
+						d = cd;
+						i = solid_id + xy;
+					}
+				}
+			}
+			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(n.x * .3 + .02), 1));
 			break;
 		case 3: // bedrock
 			float dbedrock = bedrock(sv);
