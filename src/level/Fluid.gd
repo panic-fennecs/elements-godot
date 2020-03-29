@@ -14,14 +14,14 @@ const MAX_VELOCITY = 20
 
 func init(player, type_):
 	bound_to = player
-	position = player.global_position
+	position = player.global_position + Vector2(randf()*0.001, randf()*0.001)
 	type = type_
 
-const CONTACT_FLUID_DIST = 20
+const CONTACT_FLUID_DIST = 30
 func apply_contact_fluid_force(f): # vector from fluid to force-src
 	if (f == Vector2(0, 0)):
 		f = Vector2(0.0001, 0)
-	var intensity = (0.01 / (f.length() + 1))
+	var intensity = cos(f.length()  * PI / 40) * 1.2 + 0.1
 	velocity -= f.normalized() * intensity
 
 const CONTACT_SOLID_DIST = 20
