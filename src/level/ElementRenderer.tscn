@@ -77,26 +77,51 @@ void fragment() {
 		
 		switch(int(solid.r)) {
 		case 1: // ice
-			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(.1, .6, .9), 1.));
-			break;
-		case 2: // obsidian
-			const float radius = 1.;
+			const float size = 2.;
+			const float arousal = 1.;
 			float d = 1000.;
 			vec2 i;
 			vec2 n;
 			for (float x = 0.; x < 2.; ++x) {
 				for (float y = 0.; y < 2.; ++y) {
 					vec2 xy = vec2(x, y) - .5;
-					vec2 id = solid_id + xy;
-					vec2 o = n22(id) - .5;
-					float cd = circle(solid_gv - xy - o);
+					vec2 id = floor(sv * solid_tex_size / size);
+					vec2 n_ = n22(id + xy);
+					vec2 o = (n_ - .5) * arousal;
+					vec2 gv = fract(sv * solid_tex_size / size) - .5;
+					float cd = circle(gv - xy - o);
 					if (cd < d) {
-						n = o + .5;
+						n = n_;
 						d = cd;
-						i = solid_id + xy;
+						i = id + xy;
 					}
 				}
 			}
+
+			COLOR.rgb = blend(COLOR.rgb, vec4(1. * min(vec3(1.), vec3(.6, .75, .9) * (1. + n.x * .4)), 1));
+			break;
+		case 2: // obsidian, draw voronoi
+			const float size = .5;
+			const float arousal = .3;
+			float d = 1000.;
+			vec2 i;
+			vec2 n;
+			for (float x = 0.; x < 2.; ++x) {
+				for (float y = 0.; y < 2.; ++y) {
+					vec2 xy = vec2(x, y) - .5;
+					vec2 id = floor(sv * solid_tex_size / size);
+					vec2 n_ = n22(id + xy);
+					vec2 o = (n_ - .5) * arousal;
+					vec2 gv = fract(sv * solid_tex_size / size) - .5;
+					float cd = circle(gv - xy - o);
+					if (cd < d) {
+						n = n_;
+						d = cd;
+						i = id + xy;
+					}
+				}
+			}
+
 			COLOR.rgb = blend(COLOR.rgb, vec4(vec3(n.x * .3 + .02), 1));
 			break;
 		case 3: // bedrock

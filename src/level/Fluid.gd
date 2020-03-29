@@ -1,7 +1,5 @@
 extends Node2D
 
-const ENEMY_DAMAGE = 5
-
 var bound_to = null # may be null / player / cursor
 var velocity = Vector2(0, 0)
 var type = null
@@ -113,11 +111,17 @@ func death_chance(delta):
 
 func _process(delta):
 	if !is_instance_valid(self): return
+	var fman = $"/root/Main/Level/FluidManager"
 	var enemy = get_enemy()
 	if collides_player(enemy):
-		enemy.damage(ENEMY_DAMAGE)
+		enemy.damage(calc_damage((fman.fluid_type_to_player(type).position - position).length()))
 		die()
 		return
 	age += delta
 	if death_chance(delta):
 		die()
+
+# returns damage number
+# distance between damaging fluid and its owner
+func calc_damage(distance):
+	return distance / 1000 * 9 + 1 
