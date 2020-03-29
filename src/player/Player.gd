@@ -14,6 +14,7 @@ const IDLE_SPEED = 20
 const PLAYER_SIZE = Vector2(27, 54)
 const SENSOR_DEPTH = 5
 const GROUNDED_SENSOR_DEPTH = 10
+const STEP_HEIGHT = 10
 
 var _velocity: Vector2 = Vector2.ZERO
 var health = 100
@@ -30,11 +31,19 @@ func lt(): return position - PLAYER_SIZE / 2
 # the sensors are are within the player
 # the sensors do not overlap and the four corners of the player have no sensors
 func left_block():
-	var s = [lt() + Vector2(0, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
+	var s = [lt() + Vector2(0, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y / 2)]
+	return check_sensor(s)
+
+func left_step_block():
+	var s = [lt() + Vector2(-SENSOR_DEPTH, SENSOR_DEPTH + PLAYER_SIZE.y * 2 / 3), Vector2(SENSOR_DEPTH / 2, PLAYER_SIZE.y * 1 / 3 - 2*SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func right_block():
-	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y * 2 / 3)]
+	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH), Vector2(SENSOR_DEPTH, PLAYER_SIZE.y / 2)]
+	return check_sensor(s)
+
+func right_step_block():
+	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH + PLAYER_SIZE.y * 2 / 3), Vector2(SENSOR_DEPTH / 2, PLAYER_SIZE.y * 1 / 3 - 2*SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func up_block():
@@ -48,6 +57,11 @@ func bottom_block():
 	
 func grounded_block():
 	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, GROUNDED_SENSOR_DEPTH)]
+	return check_sensor(s)
+
+func ceil_block(): # = up_block if position.y -= STEP_HEIGHT
+	var C = 5
+	var s = [lt() + Vector2(C, -STEP_HEIGHT), Vector2(PLAYER_SIZE.x - 2*C, SENSOR_DEPTH + STEP_HEIGHT)]
 	return check_sensor(s)
 
 func check_sensor(sensor):
@@ -89,9 +103,7 @@ func _physics_process(_delta) -> void:
 	
 	if _velocity.x > MAX_SPEED: _velocity.x = MAX_SPEED
 	if _velocity.x < -MAX_SPEED: _velocity.x = -MAX_SPEED
-	if bottom_block():
-		_velocity.y -= 1.0 # this pushes the player up!
-	else:
+	if !bottom_block():
 		_velocity.y += GRAVITY
 
 	apply_movement()
@@ -112,6 +124,10 @@ func _physics_process(_delta) -> void:
 func apply_movement():
 	if left_block():
 		_velocity.x = max(_velocity.x, 0)
+	if _velocity.x > 0 and !right_block() and right_step_block() and !ceil_block():
+		position.y -= STEP_HEIGHT
+	if _velocity.x < 0 and !left_block() and left_step_block() and !ceil_block():
+		position.y -= STEP_HEIGHT
 	if right_block():
 		_velocity.x = min(_velocity.x, 0)
 	if up_block():
