@@ -16,12 +16,6 @@ float smin( float a, float b, float k )
     return min( a, b ) - h*h*k*(1.0/4.0);
 }
 
-float smin2( float a, float b, float k )
-{
-    float res = exp2( -k*a ) + exp2( -k*b );
-    return -log2( res )/k;
-}
-
 float circle(vec2 p) {
 	return length(p);
 }
@@ -135,6 +129,14 @@ void fragment() {
 		}
 			
 	} else {
+		// background
+		
+		float sun = circle(uv - vec2(1.1, .2)) - .1;
+		COLOR.rgb = blend(COLOR.rgb, vec4(
+			vec3(1, .9, .7),
+			smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., sun)
+		));
+		
 		// fluids
 
 		const float radius = 1.;
