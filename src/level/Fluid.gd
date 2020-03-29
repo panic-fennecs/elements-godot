@@ -54,7 +54,7 @@ func sub_physics_process(delta):
 	velocity *= 0.994
 	velocity += Vector2(0, 0.2)
 
-const RANDOM_FORCE_STRENGTH = 0.04
+const RANDOM_FORCE_STRENGTH = 0.06
 func apply_movement():
 	if velocity.length_squared() > MAX_VELOCITY*MAX_VELOCITY: velocity = velocity.normalized() * MAX_VELOCITY
 	var sman = $"/root/Main/Level/SolidManager"
