@@ -114,7 +114,8 @@ void fragment() {
 	vec2 solid_id = floor(sv * solid_tex_size);
 	vec2 solid_gv = fract(sv * solid_tex_size) - .5;
 	vec2 fluid_id = floor(sv * fluid_tex_size.xy);
-	COLOR = vec4(vec3(.44, .77, .92) * .3, 1);
+	//COLOR = vec4(vec3(.09, .17, .22), 1);
+	COLOR = vec4(vec3(.45, .62, .22) * .8, 1);
 	//COLOR = vec4(fluid_id.xy / fluid_tex_size.xy, .22, 1);
 	
 	// solid shadow
