@@ -46,7 +46,7 @@ func _process(delta):
 				l = ($"/root/Main/Level/Player1/ForceCursor".global_position - fluid.position).length()
 				solid_type = $"../SolidManager".SolidType.Obsidian
 			
-			if (fluid.bound_to != type_to_player(solid_type)) and l < FLUID_GRID_SIZE_Y * freeze_radius:
+			if (fluid.bound_to != solid_type_to_player(solid_type)) and l < FLUID_GRID_SIZE_Y * freeze_radius:
 				var cell_pos = fluid.position / $"/root/Main/Level".WORLD_SIZE * $"../SolidManager".SOLID_GRID_SIZE
 				cell_pos = cell_pos.floor()
 				$"../SolidManager".set_cell(cell_pos.x, cell_pos.y, solid_type)
@@ -58,6 +58,7 @@ func _process(delta):
 				$"../SolidManager".set_cell(cell_pos.x + 1, cell_pos.y + 1, solid_type)
 				$"../SolidManager".set_cell(cell_pos.x + 2, cell_pos.y, solid_type)
 				fluid.die()
+				break
 			i = i - 1
 				
 	counter += delta
@@ -88,15 +89,20 @@ func get_num_fluids_of_player(player):
 			num_fluids += 1
 	return num_fluids
 
-func type_to_player(type):
+func fluid_type_to_player(type):
 	if type == FluidType.Water: return $"/root/Main/Level/Player0"
 	if type == FluidType.Lava: return $"/root/Main/Level/Player1"
+
+func solid_type_to_player(type):
+	var sman = $"/root/Main/Level/SolidManager"
+	if type == sman.SolidType.Ice: return $"/root/Main/Level/Player0"
+	if type == sman.SolidType.Obsidian: return $"/root/Main/Level/Player1"
 
 func apply_cursor_pull(player_id):
 	var player = get_node("/root/Main/Level/Player" + str(player_id))
 	var cursor = get_node("/root/Main/Level/Player" + str(player_id) + "/ForceCursor")
 	for f in fluids:
-		if type_to_player(f.type) == player:
+		if fluid_type_to_player(f.type) == player:
 			var v = cursor.global_position - f.position
 			if v.length_squared() <= f.CURSOR_RADIUS*f.CURSOR_RADIUS:
 				f.bind_to_cursor(cursor)

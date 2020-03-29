@@ -108,6 +108,7 @@ func die():
 	queue_free()
 
 func _process(delta):
+	if !is_instance_valid(self): return
 	var enemy = get_enemy()
 	if collides_player(enemy):
 		enemy.damage(ENEMY_DAMAGE)
