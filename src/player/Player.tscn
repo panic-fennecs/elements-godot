@@ -95,7 +95,7 @@ script = ExtResource( 1 )
 z_index = 1
 frames = SubResource( 1 )
 animation = "run0"
-frame = 4
+frame = 2
 playing = true
 offset = Vector2( 0, -5 )
 
