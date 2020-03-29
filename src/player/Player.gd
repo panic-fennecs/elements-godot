@@ -156,3 +156,9 @@ func damage(dmg):
 func reset():
 	health = 100
 	position = starting_pos
+
+func collides_point(point):
+	return	point.x >= position.x - PLAYER_SIZE.x/2 and \
+			point.x <= position.x + PLAYER_SIZE.x/2 and \
+			point.y >= position.y - PLAYER_SIZE.y/2 and \
+			point.y <= position.y + PLAYER_SIZE.y/2
