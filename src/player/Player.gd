@@ -209,6 +209,7 @@ func _process(delta) -> void:
 
 func damage(dmg):
 	health -= dmg
+	$"/root/Main/Level".shake(dmg);
 	if health <= 0:
 		var enemy = 1-player_id
 		$"/root/Main/Level".player_won(enemy)
