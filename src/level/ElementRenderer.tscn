@@ -86,12 +86,13 @@ void fragment() {
 			));
 			break;
 		}
+			
 	} else {
 		// fluids
 
 		const float radius = 1.;
 		float d2[2] = {1000., 1000.};
-		float sum[2] = {0., 0.};
+		float sum2[2] = {0., 0.};
 		
 		for (float x = max(0., fluid_id.x - radius); x <= min(fluid_tex_size.x - 1., fluid_id.x + radius); ++x) {
 			for (float y = max(0., fluid_id.y - radius); y <= min(fluid_tex_size.y - 1., fluid_id.y + radius); ++y) {
@@ -102,38 +103,43 @@ void fragment() {
 						break;
 					int index = int(fluid.b)-1;
 					d2[index] = smin(d2[index], circle(uv - fluid.xy * aspect) - .01, .05);
-					sum[index] += max(0., 1. - circle(uv - fluid.xy * aspect) * fluid_tex_size.y);
+					sum2[index] += max(0., 1. - circle(uv - fluid.xy * aspect) * fluid_tex_size.y);
 					//d = min(d, circle(uv - fluid.xy * aspect) - .01);
 				}
 			}
 		}
 	
-		float t = sin((sv.y + sv.x * -.8) * 50.) + elapsed_time;
-		float depth = min(1., sum[0] * sum[0] * .01);
-		float wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[0]) * abs(sin(d2[0] * 337. - t * 1.87) * .5 + sin(d2[0] * 700. + t) * .5);
-		vec3 border_color = vec3(.5, .6, .8);
-		vec3 deep_color = vec3(.1, .2, .6) * (1.5 - depth) + wave * .5;
+		vec2 d = vec2(d2[0], d2[1]);
+		vec2 dn = d / fluid_tex_size.xy;
+		vec2 sum = vec2(sum2[0], sum2[1]);
+		
+		vec2 depth = min(vec2(1.), sum * sum * .001);
+		float t = sin((sv.y + sv.x * -.7) * 50. / (1. +  depth.x)) + elapsed_time;
+		vec2 wave = smoothstep(1., 0., -dn) * abs(sin(d * 137. - t * 1.87) * sin(d * 200. - t) * .5);
+		vec2 deep_scale = (1. - depth);
+		
+		vec3 border_color0 = vec3(.5, .6, .8);
+		vec3 deep_color0 = (vec3(.1, .2, .6) * 1.5 + wave.x * .3) * deep_scale.x;
+		vec3 border_color1 = vec3(.8, .1, .1) * .2;
+		vec3 deep_color1 = (vec3(.6, .2, .1) * 1.5 - wave.y * 3. * .3) * deep_scale.y;
 	
-		COLOR.rgb = blend(COLOR.rgb, vec4(
+		vec4 color0 = vec4(
 			mix(
-				border_color,
-				deep_color,
-				clamp(0., 1., -d2[0] * 100.)
+				border_color0,
+				deep_color0,
+				clamp(0., 1., -d.x * 100.)
 			),
-			smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[0])));
-	
-		depth = min(1., sum[1] * sum[1] * .01);
-		wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[1]) * abs(sin(d2[1] * 337. - t * 1.87) + sin(d2[1] * 700. + t) * .5);
-		border_color = vec3(.8, .6, .5) * .2;
-		deep_color = vec3(.6, .2, .1) * (1.5 - depth) - wave * .5;
-	
-		COLOR.rgb = blend(COLOR.rgb, vec4(
+			smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d.x));
+		
+		vec4 color1 = vec4(
 			mix(
-				border_color,
-				deep_color,
-				clamp(0., 1., -d2[1] * 100.)
+				border_color1,
+				deep_color1,
+				clamp(0., 1., -d.y * 100.)
 			),
-			smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d2[1])));
+			smoothstep(SCREEN_PIXEL_SIZE.y * 2., .0, d.y));
+			
+		COLOR.rgb = blend(COLOR.rgb, vec4(color0.rgb * color0.a + color1.rgb * color1.a, max(color0.a, color1.a)));
 	}
 	
 	// noise
