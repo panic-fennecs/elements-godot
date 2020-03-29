@@ -41,6 +41,13 @@ func get_cell(x, y):
 	return solid_grid[x + y * SOLID_GRID_SIZE_X]
 
 func set_cell(x, y, type):
+	if type != SolidType.None:
+		for player in [$"/root/Main/Level/Player0", $"/root/Main/Level/Player1"]:
+			if player.collides_point(Vector2(x, y) * SOLID_CELL_SIZE) or \
+		 	player.collides_point(Vector2(x + 1, y) * SOLID_CELL_SIZE) or \
+		 	player.collides_point(Vector2(x, y + 1) * SOLID_CELL_SIZE) or \
+		 	player.collides_point(Vector2(x + 1, y + 1) * SOLID_CELL_SIZE):
+				return
 	if solid_grid[x + y * SOLID_GRID_SIZE_X] == SolidType.Bedrock: return
 	solid_grid[x + y * SOLID_GRID_SIZE_X] = type
 	if type == SolidType.Ice or type == SolidType.Obsidian:

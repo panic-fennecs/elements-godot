@@ -35,7 +35,7 @@ func left_block():
 	return check_sensor(s)
 
 func left_step_block():
-	var s = [lt() + Vector2(-SENSOR_DEPTH, SENSOR_DEPTH + PLAYER_SIZE.y * 2 / 3), Vector2(SENSOR_DEPTH / 2, PLAYER_SIZE.y * 1 / 3 - 2*SENSOR_DEPTH)]
+	var s = [lt() + Vector2(0, SENSOR_DEPTH + PLAYER_SIZE.y * 2 / 3), Vector2(SENSOR_DEPTH / 2, PLAYER_SIZE.y * 1 / 3 - 2*SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func right_block():
@@ -56,7 +56,8 @@ func bottom_block():
 	return check_sensor(s)
 	
 func grounded_block():
-	var s = [lt() + Vector2(0, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x, GROUNDED_SENSOR_DEPTH)]
+	var C = 10
+	var s = [lt() + Vector2(-C, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x + 2*C, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func ceil_block(): # = up_block if position.y -= STEP_HEIGHT
@@ -122,19 +123,21 @@ func _physics_process(_delta) -> void:
 			$AnimatedSprite.play("fall" + str(player_id))
 
 func apply_movement():
-	if left_block():
-		_velocity.x = max(_velocity.x, 0)
-	if _velocity.x > 0 and !right_block() and right_step_block() and !ceil_block():
-		position.y -= STEP_HEIGHT
-	if _velocity.x < 0 and !left_block() and left_step_block() and !ceil_block():
-		position.y -= STEP_HEIGHT
-	if right_block():
-		_velocity.x = min(_velocity.x, 0)
-	if up_block():
-		_velocity.y = max(_velocity.y, 0)
-	if bottom_block():
-		_velocity.y = min(_velocity.y, 0)
-	position += _velocity / 10
+	var n = _velocity.length()
+	for i in range(n):
+		if _velocity.x > 0 and !right_block() and right_step_block() and !ceil_block():
+			position.y -= STEP_HEIGHT
+		if _velocity.x < 0 and !left_block() and left_step_block() and !ceil_block():
+			position.y -= STEP_HEIGHT
+		if left_block():
+			_velocity.x = max(_velocity.x, 0)
+		if right_block():
+			_velocity.x = min(_velocity.x, 0)
+		if up_block():
+			_velocity.y = max(_velocity.y, 0)
+		if bottom_block():
+			_velocity.y = min(_velocity.y, 0)
+		position += _velocity / (10 * n)
 
 func _process(delta) -> void:
 	$Healthbar.rect_size.x = PLAYER_SIZE.x * health / 100
@@ -155,3 +158,9 @@ func damage(dmg):
 func reset():
 	health = 100
 	position = starting_pos
+
+func collides_point(point):
+	return	point.x >= position.x - PLAYER_SIZE.x/2 and \
+			point.x <= position.x + PLAYER_SIZE.x/2 and \
+			point.y >= position.y - PLAYER_SIZE.y/2 and \
+			point.y <= position.y + PLAYER_SIZE.y/2
