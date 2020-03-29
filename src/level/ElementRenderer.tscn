@@ -103,8 +103,8 @@ void fragment() {
 
 	depth = min(1., sum[1] * sum[1] * .01);
 	wave = smoothstep(.002 + .02 * (1. - depth), .001, -d2[1]) * abs(sin(d2[1] * 337. - t * 1.87) + sin(d2[1] * 700. + t) * .5);
-	border_color = vec3(.8, .6, .5);
-	deep_color = vec3(.6, .2, .1) * (1.5 - depth) + wave * .5;
+	border_color = vec3(.8, .6, .5) * .2;
+	deep_color = vec3(.6, .2, .1) * (1.5 - depth) - wave * .5;
 
 	COLOR.rgb = blend(COLOR.rgb, vec4(
 		mix(
