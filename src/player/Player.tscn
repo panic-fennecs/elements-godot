@@ -1,4 +1,4 @@
-[gd_scene load_steps=34 format=2]
+[gd_scene load_steps=36 format=2]
 
 [ext_resource path="res://src/player/Player.gd" type="Script" id=1]
 [ext_resource path="res://src/player/ForceCursor.tscn" type="PackedScene" id=2]
@@ -32,13 +32,15 @@
 [ext_resource path="res://res/images/player_red/player_run/player_run1.png" type="Texture" id=30]
 [ext_resource path="res://res/images/player_red/player_idle/player_idle5.png" type="Texture" id=31]
 [ext_resource path="res://res/images/player_red/player_fall/player_fall_slow2.png" type="Texture" id=32]
+[ext_resource path="res://res/images/player_blue/player_run/player_run5.png" type="Texture" id=33]
+[ext_resource path="res://res/images/player_blue/player_run/player_run6.png" type="Texture" id=34]
 
 [sub_resource type="SpriteFrames" id=1]
 animations = [ {
-"frames": [ ExtResource( 6 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 7 ) ],
+"frames": [ ExtResource( 6 ), ExtResource( 4 ), ExtResource( 5 ), ExtResource( 7 ), ExtResource( 33 ), ExtResource( 34 ) ],
 "loop": true,
 "name": "run0",
-"speed": 8.0
+"speed": 14.0
 }, {
 "frames": [ ExtResource( 25 ), ExtResource( 32 ) ],
 "loop": true,
@@ -92,8 +94,8 @@ script = ExtResource( 1 )
 [node name="AnimatedSprite" type="AnimatedSprite" parent="."]
 z_index = 1
 frames = SubResource( 1 )
-animation = "run1"
-frame = 1
+animation = "run0"
+frame = 4
 playing = true
 offset = Vector2( 0, -5 )
 
