@@ -38,6 +38,8 @@ func _ready():
 
 
 func get_cell(x, y):
+	if x < 0 or y < 0 or x >= SOLID_GRID_SIZE_X or y >= SOLID_GRID_SIZE_Y:
+		return SolidType.Bedrock
 	return solid_grid[x + y * SOLID_GRID_SIZE_X]
 
 func set_cell(x, y, type):
