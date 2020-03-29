@@ -5,9 +5,6 @@ const WORLD_SIZE = Vector2(1280, 720)
 var kills = [0, 0]
 
 func _ready():
-	var g = load("res://bin/gdexample.gdns")
-	var x = g.new()
-	x.foo()
 	update_labels()
 	
 
