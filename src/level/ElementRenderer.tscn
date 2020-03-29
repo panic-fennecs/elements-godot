@@ -68,7 +68,6 @@ void fragment() {
 	vec3 fluid_tex_size = vec3(textureSize(fluid_tex, 0).xyz);
 	// pixelate
 	//uv = floor(uv * fluid_tex_size.y * 16.) / fluid_tex_size.y / 16.;
-	vec2 pixel_id = floor(uv * 400.) / 400.;
 	vec2 solid_id = floor(sv * solid_tex_size);
 	vec2 solid_gv = fract(sv * solid_tex_size) - .5;
 	vec2 fluid_id = floor(sv * fluid_tex_size.xy);
@@ -147,18 +146,19 @@ void fragment() {
 		COLOR.rgb = blend(COLOR.rgb, vec4(color, 1.));
 	}
 	
-	float d = bedrock(sv);
-
+	float dbedrock = bedrock(sv);
 	COLOR.rgb = blend(COLOR.rgb, vec4(
 		mix(
 			vec3(.2, .1, .1),
 			vec3(.25, .4, .2),
-			smoothstep(-.01, 0., d)
+			smoothstep(-.01, 0., dbedrock)
 		),
-		smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., d / solid_tex_size.y)));
+		smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., dbedrock / solid_tex_size.y)
+		* (.8 + .2 * n21(floor(uv * 73.) / 73.))
+	));
 	
 	// noise
-	COLOR.rgb = blend(COLOR.rgb, vec4(vec3(n21(pixel_id)), .05));
+	COLOR.rgb = blend(COLOR.rgb, vec4(vec3(n21(floor(uv * 800.) / 800.)), .07));
 }"
 
 [sub_resource type="ShaderMaterial" id=2]
