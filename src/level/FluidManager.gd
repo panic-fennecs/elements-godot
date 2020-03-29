@@ -39,13 +39,13 @@ func _process(delta):
 func _physics_process(delta):
 	for f in fluids:
 		f.sub_physics_process(delta)
-	if Input.is_action_just_pressed("use_force_0"):
+	if Input.is_action_just_released("use_force_0"):
 		apply_cursor_pull(0)
-	elif Input.is_action_just_released("use_force_0"):
+	elif Input.is_action_just_pressed("use_force_0"):
 		drop_cursor_pull(0)
-	if Input.is_action_just_pressed("use_force_1"):
+	if Input.is_action_just_released("use_force_1"):
 		apply_cursor_pull(1)
-	elif Input.is_action_just_released("use_force_1"):
+	elif Input.is_action_just_pressed("use_force_1"):
 		drop_cursor_pull(1)
 	
 	apply_water_to_water_repel()
