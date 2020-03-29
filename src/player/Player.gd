@@ -86,11 +86,23 @@ func check_sensor(sensor):
 func is_on_floor():
 	return grounded_block()
 
-func get_bound_fluid():
+func get_bound_fluids():
 	var fman = $"/root/Main/Level/FluidManager"
+	var l = []
 	for f in fman.fluids:
 		if fman.fluid_type_to_player(f.type) == self and f.bound_to:
-			return f
+			l.append(f)
+	return l
+
+func allocate_free_solid():
+	var bound = get_bound_fluids()
+	if free_solids + len(bound) * SOLIDS_PER_FLUID < 1: return false
+	while free_solids < 1:
+		var f = bound[0]
+		bound.erase(f)
+		f.die()
+		free_solids += SOLIDS_PER_FLUID
+	return true
 
 func freeze_point(x, y):
 	var sman = $"/root/Main/Level/SolidManager"
@@ -101,11 +113,9 @@ func freeze_point(x, y):
 			player.collides_point(Vector2(x, y + 1) * sman.SOLID_CELL_SIZE) or \
 			player.collides_point(Vector2(x + 1, y + 1) * sman.SOLID_CELL_SIZE):
 			return
-	if free_solids == 0 and get_bound_fluid() == null: return
-	if free_solids == 0:
-		get_bound_fluid().die()
-		free_solids += SOLIDS_PER_FLUID
-	sman.set_cell(x, y, [sman.SolidType.Ice, sman.SolidType.Obsidian][player_id])
+	if allocate_free_solid():
+		sman.set_cell(x, y, [sman.SolidType.Ice, sman.SolidType.Obsidian][player_id])
+		free_solids -= 1
 
 func do_freeze_skill():
 	var SCS = $"/root/Main/Level/SolidManager".SOLID_CELL_SIZE
