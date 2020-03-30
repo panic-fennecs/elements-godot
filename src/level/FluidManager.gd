@@ -82,6 +82,7 @@ func create_grid():
 			grid.append([])
 	
 	for f in fluids:
+		if f.is_stuck: continue
 		var p = (f.position / FLUID_CELL_SIZE).floor()
 		grid[p.x + p.y * FLUID_GRID_SIZE.x].append(f)
 	return grid

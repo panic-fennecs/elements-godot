@@ -4,6 +4,7 @@ var bound_to = null # may be null / player / cursor
 var velocity = Vector2(0, 0)
 var type = null
 var age = 0
+var is_stuck = true
 
 const MAX_VELOCITY = 20
 
@@ -14,6 +15,7 @@ func init(cursor, type_):
 		bound_to = cursor
 	position = cursor.global_position + Vector2(randf()*0.001, randf()*0.001)
 	type = type_
+	update_stuckness()
 
 const CONTACT_FLUID_DIST = 30
 func apply_contact_fluid_force(f): # vector from fluid to force-src
@@ -40,6 +42,7 @@ func unbound_from_cursor():
 	bound_to = null
 
 func sub_physics_process(delta):
+	if is_stuck: return
 	if bound_to: apply_bound_force()
 
 	apply_movement()
@@ -90,6 +93,13 @@ func get_enemy():
 	elif type == fman.FluidType.Lava:
 		return $"/root/Main/Level/Player0"
 
+func get_cursor():
+	var fman = $"/root/Main/Level/FluidManager"
+	if type == fman.FluidType.Water:
+		return $"/root/Main/Level/Player0/ForceCursor"
+	elif type == fman.FluidType.Lava:
+		return $"/root/Main/Level/Player1/ForceCursor"
+
 func collides_player(player):
 	var EXTRA = 6
 	var PLAYER_SIZE = player.PLAYER_SIZE
@@ -97,6 +107,21 @@ func collides_player(player):
 			position.x - EXTRA <= player.position.x + PLAYER_SIZE.x/2 and \
 			position.y + EXTRA >= player.position.y - PLAYER_SIZE.y/2 and \
 			position.y - EXTRA <= player.position.y + PLAYER_SIZE.y/2
+
+func is_pos_stuck(p):
+	var sman = $"/root/Main/Level/SolidManager"
+	var x = int(p.x / sman.SOLID_CELL_SIZE.x)
+	var y = int(p.y / sman.SOLID_CELL_SIZE.y)
+	return sman.get_cell(x, y) != sman.SolidType.None
+
+func update_stuckness():
+	is_stuck = is_pos_stuck(position)
+	if is_stuck: position = Vector2(0.1, 0.1) # this is a safe-place where nobody gets hurt
+	var p = get_cursor().global_position + Vector2(randf() / 10, randf() / 10)
+	if is_stuck and !is_pos_stuck(p):
+		position = p
+		bound_to = get_cursor()
+		is_stuck = false
 
 func die():
 	$"/root/Main/Level/FluidManager".fluids.erase(self)
@@ -111,9 +136,10 @@ func death_chance(delta):
 
 func _process(delta):
 	if !is_instance_valid(self): return
+	update_stuckness()
 	var fman = $"/root/Main/Level/FluidManager"
 	var enemy = get_enemy()
-	if collides_player(enemy):
+	if !is_stuck and collides_player(enemy):
 		enemy.damage(calc_damage((fman.fluid_type_to_player(type).position - position).length()))
 		die()
 		return
