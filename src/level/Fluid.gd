@@ -116,12 +116,14 @@ func is_pos_stuck(p):
 
 func update_stuckness():
 	is_stuck = is_pos_stuck(position)
-	if is_stuck: position = Vector2(0.1, 0.1) # this is a safe-place where nobody gets hurt
-	var p = get_cursor().global_position + Vector2(randf() / 10, randf() / 10)
-	if is_stuck and !is_pos_stuck(p):
-		position = p
-		bound_to = get_cursor()
-		is_stuck = false
+	if is_stuck:
+		position = Vector2(0.1, 0.1) # this is a safe-place where nobody gets hurt
+		bound_to = get_cursor() # stuck fluids will eventually go back to the cursor (and should count as 'bound to the cursor')
+		var p = get_cursor().global_position + Vector2(randf() / 10, randf() / 10)
+		if !is_pos_stuck(p):
+			position = p
+			is_stuck = false
+			velocity = Vector2.ZERO
 
 func die():
 	$"/root/Main/Level/FluidManager".fluids.erase(self)
