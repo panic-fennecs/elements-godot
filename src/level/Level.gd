@@ -11,8 +11,8 @@ func _ready():
 
 func _process(delta):
 	var elapsed_time = (OS.get_ticks_msec() - start_time) / 1000.0 # seconds
-	position.x = sin(elapsed_time * 30) * shakyness;
-	shakyness = shakyness * .85
+	position.x = sin(elapsed_time * 40) * shakyness;
+	shakyness = shakyness * .88
 
 func update_labels():
 	$"/root/Main/Level/Player0Kills".text = str(kills[0])
@@ -30,4 +30,4 @@ func reset():
 	$Player1.reset()
 
 func shake(dmg):
-	shakyness += dmg * .1;
+	shakyness += dmg * .3;
