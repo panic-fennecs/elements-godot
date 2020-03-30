@@ -129,14 +129,6 @@ void fragment() {
 		}
 			
 	} else {
-		// background
-		
-		float sun = circle(uv - vec2(1.1, .2)) - .1;
-		COLOR.rgb = blend(COLOR.rgb, vec4(
-			vec3(1, .9, .7),
-			smoothstep(SCREEN_PIXEL_SIZE.y * 2., 0., sun)
-		));
-		
 		// fluids
 
 		const float radius = 1.;
