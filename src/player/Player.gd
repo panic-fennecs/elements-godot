@@ -235,7 +235,7 @@ func _input(event):
 			_velocity.y = -JUMP_FORCE
 
 func _process(delta) -> void:
-	$Healthbar.rect_size.x = PLAYER_SIZE.x * health / 100
+	$Healthbar.rect_size.x = 40 * health / 100
 
 	if $"/root/Main/Level".in_game():
 		# todo idk perhaps this need also needs to be set into the physics loop
@@ -269,7 +269,7 @@ func _process(delta) -> void:
 
 func damage(dmg):
 	var level = $"/root/Main/Level"
-	health -= dmg * 1000
+	health -= dmg
 	level.shake(dmg);
 	if health <= 0:
 		var enemy = 1-player_id
