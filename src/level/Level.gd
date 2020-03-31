@@ -1,7 +1,8 @@
 extends Node2D
 
 const WORLD_SIZE = Vector2(1280, 720)
-const WIN_OVERLAY_FADE_SPEED = 0.1
+const TROPHY_MOVE_START_TIME = 0.65
+const TROPHY_START_POSITION = Vector2(632, 322)
 
 enum GameState {
 	main_game,
@@ -13,7 +14,7 @@ var shakyness = 0
 onready var start_time = OS.get_ticks_msec();
 var game_state = GameState.main_game;
 var overlay_fade = 0
-var win_player = null
+var win_player_id = null
 
 func _ready():
 	update_labels()
@@ -24,20 +25,34 @@ func _process(delta):
 	shakyness = shakyness * .88
 	
 	if game_state == GameState.win_screen:
-		$WinOverlay.modulate = Color(1, 1, 1, min(max(overlay_fade, 0), 0.8))
-		$"WinLabelWrapper".modulate = Color(1, 1, 1, min(max(overlay_fade-0.5, 0), 0.8))
-		overlay_fade += WIN_OVERLAY_FADE_SPEED
-		$WinOverlay.position = get_node(win_player).position + Vector2(0, -15)
+		$WinOverlay.modulate = Color(1, 1, 1, min(max(overlay_fade*2, 0), 0.85))
+		$"WinLabelWrapper".modulate = Color(1, 1, 1, min(max(overlay_fade*1.5-0.5, 0), 1.0))
+		$"WinTrophy".modulate = Color(1, 1, 1,clamp(overlay_fade*1.5-0.5, 0, 1))
+		overlay_fade += delta
+		$WinOverlay.position = get_node("Player" + str(win_player_id)).position + Vector2(0, -15)
+		set_trophy_position()
+		if overlay_fade >= 1.25:
+			update_labels()
+
+func set_trophy_position():
+	var rel = clamp((overlay_fade - TROPHY_MOVE_START_TIME)  * 1.25, 0, 1)
+	# rel = rel * rel * (3 - 2 * rel)
+	# rel = sin((rel - 0.5) * PI) / 2 + 0.5
+	rel = 6*pow(rel, 5) - 15*pow(rel, 4) + 10*pow(rel, 3)
+	var target_position = get_node("/root/Main/Level/TrophyWrapper/Trophy" + str(win_player_id)).position
+	$WinTrophy.position = TROPHY_START_POSITION * (1 - rel) + target_position * rel
+	var scale = 2 - (rel  * 1.25)
+	$WinTrophy.scale = Vector2(scale, scale)
 
 func update_labels():
-	$"/root/Main/Level/Player0Kills".text = str(kills[0])
-	$"/root/Main/Level/Player1Kills".text = str(kills[1])
+	$"/root/Main/Level/TrophyWrapper/Player0Kills".text = str(kills[0]) + "×"
+	$"/root/Main/Level/TrophyWrapper/Player1Kills".text = str(kills[1]) + "×"
 
 func player_won(id):
 	if game_state == GameState.main_game:
+		overlay_fade = 0
 		game_state = GameState.win_screen
 		kills[id] += 1
-		update_labels()
 		$WinOverlay.visible = true
 		if id == 0:
 			$"WinLabelWrapper/WinLabel".text = "Blue Player Victory"
@@ -45,14 +60,15 @@ func player_won(id):
 			$"WinLabelWrapper/WinLabel".text = "Red Player Victory"
 		$"WinLabelWrapper".modulate = Color(1, 1, 1, 0)
 		$WinLabelWrapper.visible = true
-		overlay_fade = 0
-		win_player = "Player" + str(id)
+		$"WinTrophy".modulate = Color(1, 1, 1, 0)
+		$WinTrophy.visible = true
+		win_player_id = id
 
 func in_game():
 	return game_state == GameState.main_game
 
 func try_restart():
-	if game_state == GameState.win_screen and overlay_fade >= 2:
+	if game_state == GameState.win_screen and overlay_fade >= 1.5:
 		new_game()
 
 func new_game():
@@ -61,6 +77,7 @@ func new_game():
 	$WinOverlay.visible = false
 	$WinOverlay.modulate = Color(1, 1, 1, 0)
 	$WinLabelWrapper.visible = false
+	$WinTrophy.visible = false
 
 func reset():
 	$FluidManager.reset()

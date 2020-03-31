@@ -230,8 +230,9 @@ func apply_movement():
 		position += _velocity / (10 * n)
 
 func _input(event):
-	if event.is_action_pressed("jump_" + str(player_id)) and is_on_floor():
-		_velocity.y = -JUMP_FORCE
+	if $"/root/Main/Level".in_game():
+		if event.is_action_pressed("jump_" + str(player_id)) and is_on_floor():
+			_velocity.y = -JUMP_FORCE
 
 func _process(delta) -> void:
 	$Healthbar.rect_size.x = PLAYER_SIZE.x * health / 100
@@ -268,7 +269,7 @@ func _process(delta) -> void:
 
 func damage(dmg):
 	var level = $"/root/Main/Level"
-	health -= dmg
+	health -= dmg * 1000
 	level.shake(dmg);
 	if health <= 0:
 		var enemy = 1-player_id
