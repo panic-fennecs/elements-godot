@@ -141,22 +141,6 @@ func get_vec_sum(vec):
 func _physics_process(_delta) -> void:
 	if _velocity.x > 0: _velocity.x = max(0, _velocity.x - DRAG)
 	if _velocity.x < 0: _velocity.x = min(0, _velocity.x + DRAG)
-
-	if Input.is_action_pressed("left_" + str(player_id)):
-		_velocity.x -= MOVEMENT_FORCE
-		$AnimatedSprite.flip_h = true
-	if Input.is_action_pressed("right_" + str(player_id)):
-		_velocity.x += MOVEMENT_FORCE
-		$AnimatedSprite.flip_h = false
-	if Input.is_action_just_pressed("jump_" + str(player_id)) and is_on_floor():
-		_velocity.y = -JUMP_FORCE
-	if Input.is_action_just_pressed("drop_few_" + str(player_id)):
-		self._drop_some()
-
-	if Input.is_action_pressed("freeze_" + str(player_id)):
-		do_freeze_skill()
-	else:
-		reset_freeze_skill()
 	
 	if _velocity.x > MAX_SPEED: _velocity.x = MAX_SPEED
 	if _velocity.x < -MAX_SPEED: _velocity.x = -MAX_SPEED
@@ -229,7 +213,7 @@ func _drop_some():
 		chosen_fluids[1].position = chosen_fluids[2].position + (chosen_fluids[1].position - chosen_fluids[2].position).normalized() * 15
 
 func apply_movement():
-	var n = _velocity.length()
+	var n = int(_velocity.length())
 	for i in range(n):
 		if _velocity.x > 0 and !right_block() and right_step_block() and !ceil_block():
 			position.y -= STEP_HEIGHT
@@ -245,22 +229,50 @@ func apply_movement():
 			_velocity.y = min(_velocity.y, 0)
 		position += _velocity / (10 * n)
 
+func _input(event):
+	if event.is_action_pressed("jump_" + str(player_id)) and is_on_floor():
+		_velocity.y = -JUMP_FORCE
+
 func _process(delta) -> void:
 	$Healthbar.rect_size.x = PLAYER_SIZE.x * health / 100
-	# todo idk perhaps this need also needs to be set into the physics loop
-	var horizontal = Input.get_action_strength("aim_right_" + str(player_id)) - \
-		Input.get_action_strength("aim_left_" + str(player_id))
-	var vertical = Input.get_action_strength("aim_up_" + str(player_id)) - \
-		Input.get_action_strength("aim_down_" + str(player_id))
+
+	if $"/root/Main/Level".in_game():
+		# todo idk perhaps this need also needs to be set into the physics loop
+		var horizontal = Input.get_action_strength("aim_right_" + str(player_id)) - \
+			Input.get_action_strength("aim_left_" + str(player_id))
+		var vertical = Input.get_action_strength("aim_up_" + str(player_id)) - \
+			Input.get_action_strength("aim_down_" + str(player_id))
+		$ForceCursor.position = Vector2(horizontal, -vertical) * AIM_DISTANCE
+	else:
+		$ForceCursor.position = Vector2.ZERO
 	
-	$ForceCursor.position = Vector2(horizontal, -vertical) * AIM_DISTANCE
+	var level = $"/root/Main/Level"
+	if not level.in_game():
+		for action in ["freeze_", "use_force_"]:
+			if Input.is_action_pressed(action + str(player_id)):
+				$"/root/Main/Level".try_restart()
+	else:
+		if Input.is_action_pressed("left_" + str(player_id)):
+			_velocity.x -= MOVEMENT_FORCE
+			$AnimatedSprite.flip_h = true
+		if Input.is_action_pressed("right_" + str(player_id)):
+			_velocity.x += MOVEMENT_FORCE
+			$AnimatedSprite.flip_h = false
+		if Input.is_action_just_pressed("drop_few_" + str(player_id)):
+			self._drop_some()
+
+		if Input.is_action_pressed("freeze_" + str(player_id)):
+			do_freeze_skill()
+		else:
+			reset_freeze_skill()
 
 func damage(dmg):
+	var level = $"/root/Main/Level"
 	health -= dmg
-	$"/root/Main/Level".shake(dmg);
+	level.shake(dmg);
 	if health <= 0:
 		var enemy = 1-player_id
-		$"/root/Main/Level".player_won(enemy)
+		level.player_won(enemy)
 
 func reset():
 	health = 100
