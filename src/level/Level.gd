@@ -52,12 +52,10 @@ func in_game():
 	return game_state == GameState.main_game
 
 func try_restart():
-	print("try restart")
 	if game_state == GameState.win_screen and overlay_fade >= 2:
 		new_game()
 
 func new_game():
-	print("new game")
 	game_state = GameState.main_game
 	reset()
 	$WinOverlay.visible = false
