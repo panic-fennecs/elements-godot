@@ -119,20 +119,19 @@ func freeze_point(x, y):
 
 func do_freeze_skill():
 	var SCS = $"/root/Main/Level/SolidManager".SOLID_CELL_SIZE
-	var curr_x = int($ForceCursor.global_position.x / SCS.x)
-	var curr_y = int($ForceCursor.global_position.y / SCS.y)
+	var curr = $ForceCursor.global_position
 	
 	if last_solid_place_world_pos == null:
-		freeze_point(curr_x, curr_y)
+		freeze_point(int(curr.x / SCS.x), int(curr.y / SCS.y))
 	else:
-		for i in range(10):
-			var x = int(last_solid_place_world_pos.x / SCS.x) * (9-i) / 9 + curr_x * i / 9
-			var y = int(last_solid_place_world_pos.y / SCS.y) * (9-i) / 9 + curr_y * i / 9
-			freeze_point(x, y)
+		var n = int((curr - last_solid_place_world_pos).length()) + 1
+		for i in range(n+1):
+			var x = last_solid_place_world_pos.x * (n-i) / n + curr.x * i / n
+			var y = last_solid_place_world_pos.y * (n-i) / n + curr.y * i / n
+			freeze_point(int(x / SCS.x), int(y / SCS.y))
 	last_solid_place_world_pos = $ForceCursor.global_position
 
 func reset_freeze_skill():
-	free_solids = 0
 	last_solid_place_world_pos = null
 
 func get_vec_sum(vec):
@@ -279,6 +278,7 @@ func reset():
 	health = 100
 	position = starting_pos
 	reset_freeze_skill()
+	free_solids = 0
 
 func collides_point(point):
 	return	point.x >= position.x - PLAYER_SIZE.x/2 and \
