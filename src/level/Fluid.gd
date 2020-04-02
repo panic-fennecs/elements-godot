@@ -152,4 +152,5 @@ func _process(delta):
 # returns damage number
 # distance between damaging fluid and its owner
 func calc_damage(distance):
-	return max(2.5, distance / 1000 * 20)
+	var D = $"/root/Main/Level/Player0".AIM_DISTANCE
+	return max(distance, D) / 1000 * 20
