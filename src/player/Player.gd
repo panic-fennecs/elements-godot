@@ -195,7 +195,7 @@ func _drop_some():
 	own_fluids.erase(best_fluid)
 	own_fluids.sort_custom(FluidSorter.new(best_fluid.position), "sort_fluids")
 
-	best_fluid.bound_to = null
+	best_fluid.unbound_from_cursor()
 	best_fluid.position += best_fluid.velocity * 3
 
 	var chosen_fluids = [best_fluid]
@@ -204,7 +204,7 @@ func _drop_some():
 		chosen_fluids.append(own_fluids[i])
 
 	for f in chosen_fluids:
-		f.bound_to = null
+		f.unbound_from_cursor()
 		f.velocity = best_fluid.velocity
 		f.position = best_fluid.position + (f.position - best_fluid.position).normalized() * 15
 

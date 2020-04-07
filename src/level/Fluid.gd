@@ -5,8 +5,10 @@ var velocity = Vector2(0, 0)
 var type = null
 var age = 0
 var is_stuck = true
+var bind_cooldown = 0
 
 const MAX_VELOCITY = 20
+const BIND_COOLDOWN = 1.0/4
 
 func init(cursor, type_):
 	var fman = $"/root/Main/Level/FluidManager"
@@ -28,18 +30,20 @@ const CONTACT_SOLID_DIST = 20
 func apply_contact_solid_force(f): # vector from fluid to force-src
 	pass # velocity -= f / 2000
 
-const CURSOR_RADIUS = 100
+const CURSOR_RADIUS = 30
 func apply_bound_force(): # vector from fluid to force-src
 	var t = (bound_to.global_position - position) / 7
 	var M = 10
 	if t.length() > M: t.normalized() * M
 	velocity += t
 
-func bind_to_cursor(cursor):
-	bound_to = cursor
+func try_bind_to_cursor(cursor):
+	if bind_cooldown == 0:
+		bound_to = cursor
 
 func unbound_from_cursor():
 	bound_to = null
+	bind_cooldown = BIND_COOLDOWN
 
 func sub_physics_process(delta):
 	if is_stuck: return
@@ -117,6 +121,7 @@ func is_pos_stuck(p):
 func update_stuckness():
 	is_stuck = is_pos_stuck(position)
 	if is_stuck:
+		bind_cooldown = 0
 		position = Vector2(0.1, 0.1) # this is a safe-place where nobody gets hurt
 		bound_to = get_cursor() # stuck fluids will eventually go back to the cursor (and should count as 'bound to the cursor')
 		var p = get_cursor().global_position + Vector2(randf() / 10, randf() / 10)
@@ -145,6 +150,7 @@ func _process(delta):
 		enemy.damage(calc_damage((fman.fluid_type_to_player(type).position - position).length()))
 		die()
 		return
+	bind_cooldown = max(0, bind_cooldown - delta)
 	age += delta
 	if death_chance(delta):
 		die()
@@ -152,4 +158,5 @@ func _process(delta):
 # returns damage number
 # distance between damaging fluid and its owner
 func calc_damage(distance):
-	return (distance / 1000 * 9 + 1) * 2
+	var D = $"/root/Main/Level/Player0".AIM_DISTANCE
+	return max(distance, D) / 1000 * 20
