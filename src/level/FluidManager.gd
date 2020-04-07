@@ -39,14 +39,12 @@ func _process(delta):
 func _physics_process(delta):
 	for f in fluids:
 		f.sub_physics_process(delta)
-	if Input.is_action_just_released("use_force_0"):
-		apply_cursor_pull(0)
-	elif Input.is_action_just_pressed("use_force_0"):
-		drop_cursor_pull(0)
-	if Input.is_action_just_released("use_force_1"):
-		apply_cursor_pull(1)
-	elif Input.is_action_just_pressed("use_force_1"):
-		drop_cursor_pull(1)
+	apply_cursor_bind(0)
+	apply_cursor_bind(1)
+	if Input.is_action_just_pressed("use_force_0"):
+		drop_cursor_bind(0)
+	if Input.is_action_just_pressed("use_force_1"):
+		drop_cursor_bind(1)
 	
 	apply_water_to_water_repel()
 	apply_ice_to_water_repel()
@@ -60,16 +58,16 @@ func solid_type_to_player(type):
 	if type == sman.SolidType.Ice: return $"/root/Main/Level/Player0"
 	if type == sman.SolidType.Obsidian: return $"/root/Main/Level/Player1"
 
-func apply_cursor_pull(player_id):
+func apply_cursor_bind(player_id):
 	var player = get_node("/root/Main/Level/Player" + str(player_id))
 	var cursor = get_node("/root/Main/Level/Player" + str(player_id) + "/ForceCursor")
 	for f in fluids:
 		if fluid_type_to_player(f.type) == player:
 			var v = cursor.global_position - f.position
 			if v.length_squared() <= f.CURSOR_RADIUS*f.CURSOR_RADIUS:
-				f.bind_to_cursor(cursor)
+				f.try_bind_to_cursor(cursor)
 
-func drop_cursor_pull(player_id):
+func drop_cursor_bind(player_id):
 	var cursor = get_node("/root/Main/Level/Player" + str(player_id) + "/ForceCursor")
 	for f in fluids:
 		if f.bound_to == cursor:
