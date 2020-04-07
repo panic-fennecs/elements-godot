@@ -38,7 +38,6 @@ class PlayerWrapper:
 	func change_volume(delta):
 		self.volume = clamp(self.volume + delta, 0, 1)
 		self.player.volume_db = pow(self.volume, 1.0/4.0) * (-MIN_VOLUME_LEVEL + MAX_VOLUME_LEVEL) + MIN_VOLUME_LEVEL
-		print("volume=", volume, "  volumedb=", self.player.volume_db)
 
 	func next():
 		self.variation = (self.variation + 1) % 2
