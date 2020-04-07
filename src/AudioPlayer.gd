@@ -4,7 +4,7 @@ const MIN_VOLUME_LEVEL = -45
 const MAX_VOLUME_LEVEL = -12
 const FADE_SPEED = 1
 
-var BACKGROUND_STREAMS = [
+const BACKGROUND_STREAMS = [
 	preload("res://res/audio/a_part_0.wav"),
 	preload("res://res/audio/a_part_1.wav"),
 	preload("res://res/audio/b_part_0.wav"),
@@ -24,11 +24,11 @@ class PlayerWrapper:
 	var level
 	var volume
 	
-	func _init(level, streams):
+	func _init(level_arg):
+		self.level = level_arg
 		self.player = AudioStreamPlayer.new()
-		self.player.stream = streams[level*2]
+		self.player.stream = BACKGROUND_STREAMS[self.level*2]
 		self.player.volume_db = MIN_VOLUME_LEVEL
-		self.level = level
 		self.variation = 0
 		self.volume = 0
 
@@ -40,14 +40,14 @@ class PlayerWrapper:
 		self.player.volume_db = pow(self.volume, 1.0/4.0) * (-MIN_VOLUME_LEVEL + MAX_VOLUME_LEVEL) + MIN_VOLUME_LEVEL
 		print("volume=", volume, "  volumedb=", self.player.volume_db)
 
-	func next(streams):
+	func next():
 		self.variation = (self.variation + 1) % 2
-		self.player.stream = streams[self.level*2 + self.variation]
+		self.player.stream = BACKGROUND_STREAMS[self.level*2 + self.variation]
 		self.player.play()
 
 func _ready():
 	$MusicTimer.connect("timeout", self, "_change_music")
-	_current_music_player = PlayerWrapper.new(0, BACKGROUND_STREAMS)
+	_current_music_player = PlayerWrapper.new(0)
 	add_child(_current_music_player.player)
 	_current_music_player.player.play()
 
@@ -65,16 +65,16 @@ func _get_critical_level():
 	return level
 
 func _change_music():
-	_current_music_player.next(BACKGROUND_STREAMS)
+	_current_music_player.next()
 	for player in _fading_music_players:
-		player.next(BACKGROUND_STREAMS)
+		player.next()
 
 func _process(delta):
 	var level = _get_critical_level()
 	if level != _current_level:
 		_fading_music_players.append(_current_music_player)
 		var playing_position = _current_music_player.player.get_playback_position()
-		_current_music_player = PlayerWrapper.new(level, BACKGROUND_STREAMS)
+		_current_music_player = PlayerWrapper.new(level)
 		add_child(_current_music_player.player)
 		_current_music_player.play(playing_position)
 		_current_level = level

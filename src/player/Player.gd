@@ -12,9 +12,9 @@ const AIM_DISTANCE: float = 100.0
 const IDLE_SPEED = 20
 
 const PLAYER_SIZE = Vector2(27, 54)
-const SENSOR_DEPTH = 5
-const GROUNDED_SENSOR_DEPTH = 10
-const STEP_HEIGHT = 10
+const SENSOR_DEPTH = 5.0
+const GROUNDED_SENSOR_DEPTH = 10.0
+const STEP_HEIGHT = 10.0
 const SOLIDS_PER_FLUID = 5
 
 var _velocity: Vector2 = Vector2.ZERO
@@ -28,7 +28,7 @@ func _ready():
 	$AnimatedSprite.self_modulate = player_color
 	starting_pos = position
 
-func lt(): return position - PLAYER_SIZE / 2
+func lt(): return position - PLAYER_SIZE / 2.0
 
 # sensor = [left-top, size]-rect in world coordinates
 # the sensors are are within the player
@@ -38,7 +38,7 @@ func left_block():
 	return check_sensor(s)
 
 func left_step_block():
-	var s = [lt() + Vector2(0, SENSOR_DEPTH + PLAYER_SIZE.y * 2 / 3), Vector2(SENSOR_DEPTH / 2, PLAYER_SIZE.y * 1 / 3 - 2*SENSOR_DEPTH)]
+	var s = [lt() + Vector2(0, SENSOR_DEPTH + PLAYER_SIZE.y * 2.0 / 3.0), Vector2(SENSOR_DEPTH / 2.0, PLAYER_SIZE.y * 1.0 / 3.0 - 2.0*SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func right_block():
@@ -46,16 +46,16 @@ func right_block():
 	return check_sensor(s)
 
 func right_step_block():
-	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH + PLAYER_SIZE.y * 2 / 3), Vector2(SENSOR_DEPTH / 2, PLAYER_SIZE.y * 1 / 3 - 2*SENSOR_DEPTH)]
+	var s = [lt() + Vector2(PLAYER_SIZE.x - SENSOR_DEPTH, SENSOR_DEPTH + PLAYER_SIZE.y * 2.0 / 3.0), Vector2(SENSOR_DEPTH / 2.0, PLAYER_SIZE.y * 1.0 / 3.0 - 2.0*SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func up_block():
 	var C = 5
-	var s = [lt() + Vector2(C, 0), Vector2(PLAYER_SIZE.x - 2*C, SENSOR_DEPTH)]
+	var s = [lt() + Vector2(C, 0), Vector2(PLAYER_SIZE.x - 2.0*C, SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func bottom_block():
-	var s = [lt() + Vector2(SENSOR_DEPTH, PLAYER_SIZE.y - SENSOR_DEPTH), Vector2(PLAYER_SIZE.x - 2*SENSOR_DEPTH, SENSOR_DEPTH)]
+	var s = [lt() + Vector2(SENSOR_DEPTH, PLAYER_SIZE.y - SENSOR_DEPTH), Vector2(PLAYER_SIZE.x - 2.0*SENSOR_DEPTH, SENSOR_DEPTH)]
 	return check_sensor(s)
 	
 func grounded_block():
@@ -163,8 +163,8 @@ func _physics_process(_delta) -> void:
 
 class FluidSorter:
 	var root_pos
-	func _init(root_pos):
-		self.root_pos = root_pos
+	func _init(root_pos_arg):
+		self.root_pos = root_pos_arg
 
 	func sort_fluids(f1, f2):
 		return (f1.position - self.root_pos).length_squared() < (f2.position - self.root_pos).length_squared()
