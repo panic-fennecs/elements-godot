@@ -5,7 +5,12 @@ export(int) var player_id: int
 
 const GRAVITY: float = 6.0
 const MOVEMENT_FORCE: float = 10.0
+
 const JUMP_FORCE: float = 100.0
+
+const WALL_JUMP_FORCE_X: float = 100.0
+const WALL_JUMP_FORCE_Y: float = 100.0
+
 const DRAG: float = 3.0
 const MAX_SPEED: float = 50.0
 const AIM_DISTANCE: float = 100.0
@@ -57,10 +62,22 @@ func up_block():
 func bottom_block():
 	var s = [lt() + Vector2(SENSOR_DEPTH, PLAYER_SIZE.y - SENSOR_DEPTH), Vector2(PLAYER_SIZE.x - 2.0*SENSOR_DEPTH, SENSOR_DEPTH)]
 	return check_sensor(s)
-	
+
 func grounded_block():
-	var C = 10
-	var s = [lt() + Vector2(-C, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x + 2*C, GROUNDED_SENSOR_DEPTH)]
+	var C = 1
+	var s = [lt() + Vector2(C, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x - 2*C, GROUNDED_SENSOR_DEPTH)]
+	return check_sensor(s)
+
+# for wall-jumps
+func left_grounded_block():
+	var C = 5
+	var s = [lt() + Vector2(-C, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x + C, GROUNDED_SENSOR_DEPTH)]
+	return check_sensor(s)
+
+# for wall-jumps
+func right_grounded_block():
+	var C = 5
+	var s = [lt() + PLAYER_SIZE, Vector2(PLAYER_SIZE.x + C, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func ceil_block(): # = up_block if position.y -= STEP_HEIGHT
@@ -247,8 +264,15 @@ func _process(delta) -> void:
 			if Input.is_action_pressed(action + str(player_id)):
 				$"/root/Main/Level".try_restart()
 	else:
-		if Input.is_action_pressed("jump_" + str(player_id)) and is_on_floor():
-			_velocity.y = -JUMP_FORCE
+		if Input.is_action_pressed("jump_" + str(player_id)):
+			if is_on_floor():
+				_velocity.y = -JUMP_FORCE
+			elif left_grounded_block():
+				_velocity.y = -WALL_JUMP_FORCE_Y
+				_velocity.x = WALL_JUMP_FORCE_X
+			elif right_grounded_block():
+				_velocity.y = -WALL_JUMP_FORCE_Y
+				_velocity.x = -WALL_JUMP_FORCE_X
 		if Input.is_action_pressed("left_" + str(player_id)):
 			_velocity.x -= MOVEMENT_FORCE
 			$AnimatedSprite.flip_h = true
