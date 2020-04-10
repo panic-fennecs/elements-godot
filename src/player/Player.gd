@@ -70,13 +70,13 @@ func grounded_block():
 
 # for wall-jumps
 func left_grounded_block():
-	var C = 5.0
+	var C = 10.0
 	var s = [lt() + Vector2(-C, PLAYER_SIZE.y), Vector2(C/2.0, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 # for wall-jumps
 func right_grounded_block():
-	var C = 5.0
+	var C = 10.0
 	var s = [lt() + PLAYER_SIZE, Vector2(C/2.0, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
@@ -267,10 +267,10 @@ func _process(delta) -> void:
 		if Input.is_action_pressed("jump_" + str(player_id)):
 			if is_on_floor():
 				_velocity.y = -JUMP_FORCE
-			elif left_grounded_block():
+			elif left_grounded_block() and Input.is_action_pressed("right_" + str(player_id)):
 				_velocity.y = -WALL_JUMP_FORCE_Y
 				_velocity.x = WALL_JUMP_FORCE_X
-			elif right_grounded_block():
+			elif right_grounded_block() and Input.is_action_pressed("left_" + str(player_id)):
 				_velocity.y = -WALL_JUMP_FORCE_Y
 				_velocity.x = -WALL_JUMP_FORCE_X
 		if Input.is_action_pressed("left_" + str(player_id)):
