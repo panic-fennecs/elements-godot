@@ -67,13 +67,14 @@ func _get_critical_level():
 	return level
 
 func player_won():
-	_new_music(_get_critical_level(), 1)
+	_new_music(_current_level, 1)
+	$ChangePartTimer.stop()
 
 func reset():
 	_stop_music()
-	$ChangePartTimer.stop()
 	$MusicRefreshTimer.stop()
 	$RestartTimer.start()
+	$ChangePartTimer.start()
 
 func _refresh_music():
 	if _current_music_player != null:
