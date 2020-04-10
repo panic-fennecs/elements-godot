@@ -64,20 +64,20 @@ func bottom_block():
 	return check_sensor(s)
 
 func grounded_block():
-	var C = 1
+	var C = 1.0
 	var s = [lt() + Vector2(C, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x - 2*C, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 # for wall-jumps
 func left_grounded_block():
-	var C = 5
-	var s = [lt() + Vector2(-C, PLAYER_SIZE.y), Vector2(PLAYER_SIZE.x + C, GROUNDED_SENSOR_DEPTH)]
+	var C = 5.0
+	var s = [lt() + Vector2(-C, PLAYER_SIZE.y), Vector2(C/2.0, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 # for wall-jumps
 func right_grounded_block():
-	var C = 5
-	var s = [lt() + PLAYER_SIZE, Vector2(PLAYER_SIZE.x + C, GROUNDED_SENSOR_DEPTH)]
+	var C = 5.0
+	var s = [lt() + PLAYER_SIZE, Vector2(C/2.0, GROUNDED_SENSOR_DEPTH)]
 	return check_sensor(s)
 
 func ceil_block(): # = up_block if position.y -= STEP_HEIGHT
