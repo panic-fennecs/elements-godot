@@ -52,6 +52,7 @@ func player_won(id):
 	if game_state == GameState.main_game:
 		overlay_fade = 0
 		game_state = GameState.win_screen
+		$"/root/Main/AudioPlayer".player_won()
 		kills[id] += 1
 		$WinOverlay.visible = true
 		if id == 0:
@@ -80,6 +81,7 @@ func new_game():
 	$WinTrophy.visible = false
 
 func reset():
+	$"/root/Main/AudioPlayer".reset()
 	$FluidManager.reset()
 	$SolidManager.reset()
 	$Player0.reset()
