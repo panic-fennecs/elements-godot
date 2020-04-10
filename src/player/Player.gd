@@ -228,11 +228,6 @@ func apply_movement():
 			_velocity.y = min(_velocity.y, 0)
 		position += _velocity / (10 * n)
 
-func _input(event):
-	if $"/root/Main/Level".in_game():
-		if event.is_action_pressed("jump_" + str(player_id)) and is_on_floor():
-			_velocity.y = -JUMP_FORCE
-
 func _process(delta) -> void:
 	$Healthbar.rect_size.x = 40 * health / 100
 
@@ -252,6 +247,8 @@ func _process(delta) -> void:
 			if Input.is_action_pressed(action + str(player_id)):
 				$"/root/Main/Level".try_restart()
 	else:
+		if Input.is_action_pressed("jump_" + str(player_id)) and is_on_floor():
+			_velocity.y = -JUMP_FORCE
 		if Input.is_action_pressed("left_" + str(player_id)):
 			_velocity.x -= MOVEMENT_FORCE
 			$AnimatedSprite.flip_h = true
