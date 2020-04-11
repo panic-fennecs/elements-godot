@@ -27,9 +27,15 @@ var health = 100
 var starting_pos = null
 var last_solid_place_world_pos = null
 var free_solids = 0
+var dmg_outline_value = 0.0
 
 func _ready():
-	if player_id == 1: $AnimatedSprite.flip_h = true
+	$AnimatedSprite.material = $AnimatedSprite.material.duplicate()
+	if player_id == 1:
+		$AnimatedSprite.flip_h = true
+		$AnimatedSprite.material.set_shader_param("outline_color", Color.darkblue)
+	else:
+		$AnimatedSprite.material.set_shader_param("outline_color", Color.webmaroon)
 	$AnimatedSprite.self_modulate = player_color
 	starting_pos = position
 
@@ -178,6 +184,9 @@ func _physics_process(_delta) -> void:
 		else:
 			$AnimatedSprite.play("fall" + str(player_id))
 
+	$AnimatedSprite.material.set_shader_param("outline_width", dmg_outline_value)
+	dmg_outline_value = max(0.0, dmg_outline_value-0.1)
+
 class FluidSorter:
 	var root_pos
 	func _init(root_pos_arg):
@@ -294,12 +303,14 @@ func damage(dmg):
 	if health <= 0:
 		var enemy = 1-player_id
 		level.player_won(enemy)
+	dmg_outline_value = min(dmg_outline_value + dmg * 0.2, 4);
 
 func reset():
 	health = 100
 	position = starting_pos
 	reset_freeze_skill()
 	free_solids = 0
+	dmg_outline_value = 0.0
 
 func collides_point(point):
 	return	point.x >= position.x - PLAYER_SIZE.x/2 and \

@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/player/Player.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/level/Level.gd" type="Script" id=2]
@@ -7,6 +7,12 @@
 [ext_resource path="res://src/level/FluidManager.tscn" type="PackedScene" id=5]
 [ext_resource path="res://res/images/win_overlay/win_overlay.png" type="Texture" id=6]
 [ext_resource path="res://res/images/trophy/trophy.png" type="Texture" id=7]
+[ext_resource path="res://src/player/outline.shader" type="Shader" id=8]
+
+[sub_resource type="ShaderMaterial" id=1]
+shader = ExtResource( 8 )
+shader_param/outline_width = 2.0
+shader_param/outline_color = null
 
 [node name="Level" type="Node2D"]
 script = ExtResource( 2 )
@@ -21,6 +27,7 @@ __meta__ = {
 position = Vector2( 375.942, 258.235 )
 
 [node name="Player1" parent="." instance=ExtResource( 1 )]
+material = SubResource( 1 )
 position = Vector2( 889.738, 199.524 )
 player_id = 1
 
