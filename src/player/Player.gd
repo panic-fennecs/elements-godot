@@ -300,6 +300,7 @@ func _process(delta) -> void:
 
 func damage(dmg):
 	var level = $"/root/Main/Level"
+	AudioPlayer.play_sample(AudioPlayer.WHIZ, -28)
 	health -= dmg
 	level.shake(dmg);
 	if health <= 0:

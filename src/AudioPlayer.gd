@@ -13,8 +13,11 @@ const BACKGROUND_STREAMS = [
 	preload("res://res/audio/c_part_cut.wav"),
 ]
 
+const WHIZ = preload("res://res/audio/whiz.wav")
+
 var _current_music_player = null
 var _fading_music_players = []
+var _sample_players = []
 
 var _current_level = 0
 
@@ -45,6 +48,14 @@ class PlayerWrapper:
 	func refresh():
 		self.player.stream = BACKGROUND_STREAMS[self.level*2 + self.variation]
 		self.player.play()
+
+func play_sample(sample, volume_db=0.0):
+	var player = AudioStreamPlayer.new()
+	player.stream = sample
+	player.volume_db = volume_db
+	add_child(player)
+	_sample_players.append(player)
+	player.play()
 
 func _ready():
 	$MusicRefreshTimer.connect("timeout", self, "_refresh_music")
@@ -118,3 +129,10 @@ func _process(delta):
 			fading_music_player.player.stop()
 			remove_child(fading_music_player.player)
 			_fading_music_players.erase(fading_music_player)
+			break
+
+	for player in _sample_players:
+		if not player.playing:
+			remove_child(player)
+			_sample_players.erase(player)
+			break
