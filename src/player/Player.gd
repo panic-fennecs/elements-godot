@@ -20,7 +20,7 @@ const PLAYER_SIZE = Vector2(27, 54)
 const SENSOR_DEPTH = 5.0
 const GROUNDED_SENSOR_DEPTH = 10.0
 const STEP_HEIGHT = 10.0
-const SOLIDS_PER_FLUID = 5
+const SOLIDS_PER_FLUID = 8
 
 var _velocity: Vector2 = Vector2.ZERO
 var health = 100
@@ -300,7 +300,7 @@ func _process(delta) -> void:
 
 func damage(dmg):
 	var level = $"/root/Main/Level"
-	AudioPlayer.play_sample(AudioPlayer.WHIZ, -28)
+	AudioPlayer.play_sample(AudioPlayer.WHIZ, -40)
 	health -= dmg
 	level.shake(dmg);
 	if health <= 0:

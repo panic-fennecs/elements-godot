@@ -9,8 +9,8 @@ const BACKGROUND_STREAMS = [
 	preload("res://res/audio/a_part_cut.wav"),
 	preload("res://res/audio/b_part.wav"),
 	preload("res://res/audio/b_part_cut.wav"),
-	preload("res://res/audio/c_part.wav"),
-	preload("res://res/audio/c_part_cut.wav"),
+	preload("res://res/audio/d_part.wav"),
+	preload("res://res/audio/d_part_cut.wav"),
 ]
 
 const WHIZ = preload("res://res/audio/whiz.wav")
