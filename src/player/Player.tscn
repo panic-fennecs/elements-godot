@@ -38,8 +38,10 @@
 
 [sub_resource type="ShaderMaterial" id=1]
 shader = ExtResource( 35 )
-shader_param/outline_width = 2.0
-shader_param/outline_color = Color( 1, 0, 0, 1 )
+shader_param/outline_width = 0.8
+shader_param/outline_color = Color( 1, 0.164706, 0, 1 )
+shader_param/layers = 5
+shader_param/fineness = 0.5
 
 [sub_resource type="SpriteFrames" id=2]
 animations = [ {
@@ -102,7 +104,7 @@ material = SubResource( 1 )
 z_index = 1
 frames = SubResource( 2 )
 animation = "run0"
-frame = 1
+frame = 5
 playing = true
 offset = Vector2( 0, -5 )
 

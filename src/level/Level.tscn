@@ -13,6 +13,8 @@
 shader = ExtResource( 8 )
 shader_param/outline_width = 2.0
 shader_param/outline_color = null
+shader_param/layers = 5
+shader_param/fineness = 1.0
 
 [node name="Level" type="Node2D"]
 script = ExtResource( 2 )

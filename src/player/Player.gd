@@ -31,11 +31,13 @@ var dmg_outline_value = 0.0
 
 func _ready():
 	$AnimatedSprite.material = $AnimatedSprite.material.duplicate()
+	var outline_color;
 	if player_id == 1:
 		$AnimatedSprite.flip_h = true
-		$AnimatedSprite.material.set_shader_param("outline_color", Color.darkblue)
+		outline_color =  Color.darkblue
 	else:
-		$AnimatedSprite.material.set_shader_param("outline_color", Color.webmaroon)
+		outline_color = Color(1.0, 0.0, 0.164, 1.0)
+	$AnimatedSprite.material.set_shader_param("outline_color", outline_color)
 	$AnimatedSprite.self_modulate = player_color
 	starting_pos = position
 
@@ -303,7 +305,7 @@ func damage(dmg):
 	if health <= 0:
 		var enemy = 1-player_id
 		level.player_won(enemy)
-	dmg_outline_value = min(dmg_outline_value + dmg * 0.2, 4);
+	dmg_outline_value = min(dmg_outline_value + dmg * 0.1, 2.0);
 
 func reset():
 	health = 100
