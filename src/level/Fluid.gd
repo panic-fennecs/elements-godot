@@ -30,7 +30,7 @@ const CONTACT_SOLID_DIST = 20
 func apply_contact_solid_force(f): # vector from fluid to force-src
 	pass # velocity -= f / 2000
 
-const CURSOR_RADIUS = 30
+const CURSOR_RADIUS = 60
 func apply_bound_force(): # vector from fluid to force-src
 	var t = (bound_to.global_position - position) / 7
 	var M = 10
